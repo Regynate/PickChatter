@@ -33,6 +33,14 @@ namespace PickChatter
             {
                 Invoke(() => WebSocketServer.Instance.SendChatter(args.Chatter));
             };
+
+            WebSocketServer.Instance.ConnectionOpen += (_, _) =>
+            {
+                if (ChatterPicker.Instance.ChatterName != null)
+                {
+                    WebSocketServer.Instance.SendChatter(ChatterPicker.Instance.ChatterName);
+                }
+            };
         }
 
         private static void Invoke(Action action)

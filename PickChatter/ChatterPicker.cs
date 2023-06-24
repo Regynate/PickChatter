@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using TwitchLib.Client.Events;
 using System.Threading;
+using TwitchLib.Client.Models;
 
 namespace PickChatter
 {
@@ -75,27 +76,34 @@ namespace PickChatter
                 DisplayName = displayname;
             }
 
-            public Chatter(string username, string displayname, string message, string color)
+            public Chatter(string username, ChatMessage message) : this(username, message.DisplayName)
             {
-                Username = username;
-                DisplayName = displayname;
-                this.color = color;
-                UpdateMessage(message);
+                Update(message);
             }
 
             private readonly List<Message> messages = new();
 
             public string Username { get; }
-            public string DisplayName { get; set; }
+            public string DisplayName { get; private set; }
             private string? color;
-            public string Color { get => color ?? "#ff7f50"; set => color = value; }
+            public string Color { get => color ?? "#ff7f50"; }
+            public bool IsSubscriber { get; private set; }
+            public int SubscriberTime { get; private set; }
+            public bool IsModerator { get; private set; }
+            public bool IsVIP { get; private set; }
             public bool HasMessage { get => messages.Count > 0; }
             public DateTime Timestamp { get => HasMessage ? messages.Last().Timestamp : DateTime.MinValue; }
             public string LastMessage { get => HasMessage ? messages.Last().Content : ""; }
 
-            public void UpdateMessage(string message)
+            public void Update(ChatMessage message)
             {
-                messages.Add(new Message(message, DateTime.Now));
+                messages.Add(new Message(message.Message, DateTime.Now));
+                DisplayName = message.DisplayName;
+                color = message.ColorHex;
+                IsSubscriber = message.IsSubscriber;
+                IsModerator = message.IsModerator;
+                IsVIP = message.IsVip;
+                SubscriberTime = message.SubscribedMonthCount;
             }
 
             public int MessageCount(TimeSpan timeLimit)
@@ -158,6 +166,7 @@ namespace PickChatter
         private ChatterPicker()
         {
             TwitchClient.Instance.MessageReceived += OnMessageReceived;
+            TwitchClient.Instance.UserBanned += OnUserBanned;
             Task.Run(() =>
             {
                 while (true)
@@ -169,16 +178,29 @@ namespace PickChatter
             );
         }
 
-        private bool SatisfiesRules(Chatter chatter)
+        private void OnUserBanned(object? sender, OnUserBannedArgs e)
         {
-            bool result = chatter.HasMessage;
+            chatters.Remove(e.UserBan.Username);
+        }
 
-            result = result && (!SettingsManager.Instance.Rule1Enabled ||
-                SettingsManager.Instance.Rule1MessageCount <= chatter.MessageCount(
-                    TimeSpan.FromMinutes(SettingsManager.Instance.Rule1TimeLimit)));
+        private bool Rule1(Chatter chatter)
+        {
+            if (!SettingsManager.Instance.Rule1Enabled)
+            {
+                return true;
+            }
+            return SettingsManager.Instance.Rule1MessageCount <= 
+                chatter.MessageCount(TimeSpan.FromMinutes(SettingsManager.Instance.Rule1TimeLimit));
+        }
 
-            result = result && (!SettingsManager.Instance.Rule2Enabled ||
-                chatter.ContainsMessage(
+        private bool Rule2(Chatter chatter)
+        {
+            if (!SettingsManager.Instance.Rule2Enabled)
+            {
+                return true;
+            }
+
+            return chatter.ContainsMessage(
                     TimeSpan.FromMinutes(SettingsManager.Instance.Rule1TimeLimit),
                     s =>
                     {
@@ -190,7 +212,7 @@ namespace PickChatter
                             sComp = sComp.ToLower();
                         }
 
-                        switch ((SettingsManager.StringContainType)SettingsManager.Instance.Rule2ContainType)
+                        switch ((SettingsManager.StringContainType) SettingsManager.Instance.Rule2ContainType)
                         {
                             case SettingsManager.StringContainType.Equals:
                                 return s.Equals(sComp);
@@ -200,11 +222,28 @@ namespace PickChatter
                                 return s.StartsWith(sComp);
                             case SettingsManager.StringContainType.EndsWith:
                                 return s.EndsWith(sComp);
-                            default: return false;
+                            default:
+                                return false;
                         }
-                    }));
+                    });
+        }
 
-            return result;
+        private bool Rule3(Chatter chatter)
+        {
+            if (!SettingsManager.Instance.Rule3Enabled)
+            {
+                return true;
+            }
+
+            return SettingsManager.Instance.Rule3Moderator && chatter.IsModerator ||
+                SettingsManager.Instance.Rule3Subscriber && chatter.IsSubscriber && 
+                    chatter.SubscriberTime >= SettingsManager.Instance.Rule3SubscriberTime ||
+                SettingsManager.Instance.Rule3VIP && chatter.IsVIP;
+        }
+
+        private bool SatisfiesRules(Chatter chatter)
+        {
+            return chatter.HasMessage && Rule1(chatter) && Rule2(chatter) && Rule3(chatter);
         }
 
         private Dictionary<string, Chatter> GetFilteredChatters()
@@ -214,18 +253,15 @@ namespace PickChatter
 
         private void OnMessageReceived(object? sender, OnMessageReceivedArgs e)
         {
-            string displayname = e.ChatMessage.DisplayName;
             string username = e.ChatMessage.Username;
 
             if (chatters.ContainsKey(username))
             {
-                chatters[username].UpdateMessage(e.ChatMessage.Message);
-                chatters[username].Color = e.ChatMessage.ColorHex;
-                chatters[username].DisplayName = displayname;
+                chatters[username].Update(e.ChatMessage);
             }
             else 
             {
-                chatters.Add(username, new Chatter(username, displayname, e.ChatMessage.Message, e.ChatMessage.ColorHex));
+                chatters.Add(username, new Chatter(username, e.ChatMessage));
             }
 
             if (username == currentChatter?.Username)

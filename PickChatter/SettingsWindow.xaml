@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:PickChatter"
         mc:Ignorable="d"
         DataContext="{Binding Source={x:Static local:SettingsManager.Instance}}"
-        Title="Settings" Height="450" Width="800" Closing="Window_Closing">
+        Title="Settings" Height="480" Width="800" Closing="Window_Closing">
     <Window.Resources>
         <local:EnumBooleanConverter x:Key="EnumBooleanConverter" />
     </Window.Resources>
@@ -40,8 +40,21 @@
                     <CheckBox HorizontalAlignment="Left" Margin="10,4,0,0" VerticalAlignment="Top" Content="case-sensitive" IsChecked="{Binding Rule2CaseSensitive}"/>
                 </StackPanel>
             </StackPanel>
+            <StackPanel HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Orientation="Horizontal">
+                <CheckBox x:Name="Rule3Checkbox" HorizontalAlignment="Left" Margin="0,4,0,0" VerticalAlignment="Top" IsChecked="{Binding Rule3Enabled}"/>
+                <StackPanel x:Name="Rule3Panel" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" Orientation="Horizontal" IsEnabled="{Binding ElementName=Rule3Checkbox, Path=IsChecked}">
+                    <TextBlock Text="they are " HorizontalAlignment="Left" Margin="10,3,0,0" VerticalAlignment="Top" TextWrapping="Wrap"/>
+                    <CheckBox HorizontalAlignment="Left" Margin="0,4,0,0" VerticalAlignment="Top" Content="a subscriber (at least " IsChecked="{Binding Rule3Subscriber}"/>
+                    <TextBox Text="{Binding Rule3SubscriberTime}" HorizontalAlignment="Left" Margin="0,2,0,0" VerticalAlignment="Top" TextWrapping="NoWrap" MaxLength="3" Width="30" PreviewTextInput="NumberValidationTextBox"/>
+                    <TextBlock Text=" months)" HorizontalAlignment="Left" Margin="0,3,0,0" VerticalAlignment="Top" TextWrapping="Wrap"/>
+                    <TextBlock Text=" or " HorizontalAlignment="Left" Margin="0,3,0,0" VerticalAlignment="Top" TextWrapping="Wrap"/>
+                    <CheckBox HorizontalAlignment="Left" Margin="0,4,0,0" VerticalAlignment="Top" Content="a VIP" IsChecked="{Binding Rule3VIP}"/>
+                    <TextBlock Text=" or " HorizontalAlignment="Left" Margin="0,3,0,0" VerticalAlignment="Top" TextWrapping="Wrap"/>
+                    <CheckBox HorizontalAlignment="Left" Margin="0,4,0,0" VerticalAlignment="Top" Content="a moderator" IsChecked="{Binding Rule3Moderator}"/>
+                </StackPanel>
+            </StackPanel>
         </StackPanel>
-        <StackPanel HorizontalAlignment="Left" Margin="40,230,0,0" VerticalAlignment="Top" Orientation="Vertical">
+        <StackPanel HorizontalAlignment="Left" Margin="40,250,0,0" VerticalAlignment="Top" Orientation="Vertical">
             <TextBlock Text="Speech synthesis" FontSize="18" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" TextWrapping="Wrap"/>
             <StackPanel HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Orientation="Vertical">
                 <CheckBox HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" Content="Enable speech synthesis" IsChecked="{Binding SpeechSynthesisEnabled}" x:Name="EnableSpeechSynthesisCheckbox"/>

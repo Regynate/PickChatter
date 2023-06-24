@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 
 namespace PickChatter
 {
-
     internal class SettingsManager : INotifyPropertyChanged
     {
         public enum StringContainType
@@ -124,6 +123,36 @@ namespace PickChatter
         {
             get => GetProperty<int>(nameof(Settings.Default.SpeechSynthesisType));
             set => SetProperty(nameof(Settings.Default.SpeechSynthesisType), value);
+        }
+
+        public bool Rule3Enabled
+        {
+            get => GetProperty<bool>(nameof(Settings.Default.Rule3Enabled));
+            set => SetProperty(nameof(Settings.Default.Rule3Enabled), value);
+        }
+
+        public bool Rule3Subscriber
+        {
+            get => GetProperty<bool>(nameof(Settings.Default.Rule3Subscriber));
+            set => SetProperty(nameof(Settings.Default.Rule3Subscriber), value);
+        }
+
+        public bool Rule3VIP
+        {
+            get => GetProperty<bool>(nameof(Settings.Default.Rule3VIP));
+            set => SetProperty(nameof(Settings.Default.Rule3VIP), value);
+        }
+
+        public bool Rule3Moderator
+        {
+            get => GetProperty<bool>(nameof(Settings.Default.Rule3Moderator));
+            set => SetProperty(nameof(Settings.Default.Rule3Moderator), value);
+        }
+
+        public int Rule3SubscriberTime
+        {
+            get => GetProperty<int>(nameof(Settings.Default.Rule3SubscriberTime));
+            set => SetProperty(nameof(Settings.Default.Rule3SubscriberTime), value);
         }
 
         public bool HasModifiedProperties()

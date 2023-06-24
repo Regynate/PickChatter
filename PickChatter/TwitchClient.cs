@@ -27,6 +27,7 @@ namespace PickChatter
         private readonly TwitchLib.Api.TwitchAPI api;
 
         public event EventHandler<OnMessageReceivedArgs>? MessageReceived;
+        public event EventHandler<OnUserBannedArgs>? UserBanned;
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -79,6 +80,7 @@ namespace PickChatter
             client.OnIncorrectLogin += OnIncorrectLogin;
             client.OnJoinedChannel += OnJoinedChannel;
             client.OnMessageReceived += (sender, args) => MessageReceived?.Invoke(this, args);
+            client.OnUserBanned += (sender, args) => UserBanned?.Invoke(this, args);
 
             Task.Run(() =>
             {

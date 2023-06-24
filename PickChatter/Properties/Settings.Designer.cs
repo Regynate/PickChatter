@@ -226,5 +226,65 @@ namespace PickChatter.Properties {
                 this["UpgradeRequired"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool Rule3Enabled {
+            get {
+                return ((bool)(this["Rule3Enabled"]));
+            }
+            set {
+                this["Rule3Enabled"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool Rule3Subscriber {
+            get {
+                return ((bool)(this["Rule3Subscriber"]));
+            }
+            set {
+                this["Rule3Subscriber"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool Rule3VIP {
+            get {
+                return ((bool)(this["Rule3VIP"]));
+            }
+            set {
+                this["Rule3VIP"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool Rule3Moderator {
+            get {
+                return ((bool)(this["Rule3Moderator"]));
+            }
+            set {
+                this["Rule3Moderator"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        public int Rule3SubscriberTime {
+            get {
+                return ((int)(this["Rule3SubscriberTime"]));
+            }
+            set {
+                this["Rule3SubscriberTime"] = value;
+            }
+        }
     }
 }
