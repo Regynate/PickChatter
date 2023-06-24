@@ -1,0 +1,72 @@
+﻿<Window x:Class="PickChatter.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PickChatter"
+        mc:Ignorable="d"
+        DataContext="{Binding Source={x:Static local:SettingsManager.Instance}}"
+        Title="Settings" Height="450" Width="800" Closing="Window_Closing">
+    <Window.Resources>
+        <local:EnumBooleanConverter x:Key="EnumBooleanConverter" />
+    </Window.Resources>
+    <Grid>
+        <Button Content="Connect To Twitch" HorizontalAlignment="Left" Height="20" Margin="40,80,0,0" VerticalAlignment="Top" Width="120" Click="ConnectToTwitchButton_Click" x:Name="ConnectToTwitchButton"/>
+        <Label Content="Twitch channel to listen to:" HorizontalAlignment="Left" Height="30" Margin="40,31,0,0" VerticalAlignment="Top" Width="154"/>
+        <TextBox x:Name="TwitchChannelTextBox" HorizontalAlignment="Left" Margin="199,37,0,0" TextWrapping="NoWrap" Text="{Binding TwitchChannel}" VerticalAlignment="Top" Width="120"/>
+        <Button x:Name="SaveButton" Content="Save" Margin="0,0,10,10" FontSize="16" Height="30" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="100" Click="SaveButton_Click"/>
+        <Button x:Name="CancelButton" Content="Cancel" Margin="0,0,120,10" FontSize="16" Height="30" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="100" Click="CancelButton_Click"/>
+        <TextBlock Text="Pick user if:" FontSize="18" HorizontalAlignment="Left" Margin="40,120,0,0" VerticalAlignment="Top" TextWrapping="Wrap"/>
+        <StackPanel HorizontalAlignment="Left" Margin="40,150,0,0" VerticalAlignment="Top" Orientation="Vertical">
+            <StackPanel HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" Orientation="Horizontal">
+                <CheckBox x:Name="Rule1Checkbox" HorizontalAlignment="Left" Margin="0,1,0,0" VerticalAlignment="Top" IsChecked="{Binding Rule1Enabled}"/>
+                <StackPanel x:Name="Rule1Panel" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" Orientation="Horizontal" IsEnabled="{Binding ElementName=Rule1Checkbox, Path=IsChecked}">
+                    <TextBlock Text="they sent at least " HorizontalAlignment="Left" Margin="10,1,0,0" VerticalAlignment="Top" TextWrapping="Wrap"/>
+                    <TextBox Text="{Binding Rule1MessageCount}" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" TextWrapping="NoWrap" MaxLength="3" Width="30" PreviewTextInput="NumberValidationTextBox"/>
+                    <TextBlock Text=" messages during past " HorizontalAlignment="Left" Margin="0,1,0,0" VerticalAlignment="Top" TextWrapping="Wrap"/>
+                    <TextBox Text="{Binding Rule1TimeLimit}" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" TextWrapping="NoWrap" MaxLength="3" Width="30" PreviewTextInput="NumberValidationTextBox"/>
+                    <TextBlock Text=" minutes" HorizontalAlignment="Left" Margin="0,1,0,0" VerticalAlignment="Top" TextWrapping="Wrap"/>
+                </StackPanel>
+            </StackPanel>
+            <StackPanel HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Orientation="Horizontal">
+                <CheckBox x:Name="Rule2Checkbox" HorizontalAlignment="Left" Margin="0,4,0,0" VerticalAlignment="Top" IsChecked="{Binding Rule2Enabled}"/>
+                <StackPanel x:Name="Rule2Panel" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" Orientation="Horizontal" IsEnabled="{Binding ElementName=Rule2Checkbox, Path=IsChecked}">
+                    <TextBlock Text="they sent a message that " HorizontalAlignment="Left" Margin="10,3,0,0" VerticalAlignment="Top" TextWrapping="Wrap"/>
+                    <ComboBox Width="90" ItemsSource="{Binding Source={x:Static local:SettingsManager.ContainTypeItems}}" SelectedIndex="{Binding Rule2ContainType}"/>
+                    <TextBox HorizontalAlignment="Left" Margin="10,2,0,0" VerticalAlignment="Top" TextWrapping="NoWrap" Width="150" Text="{Binding Rule2String}"/>
+                    <TextBlock Text=" during past " HorizontalAlignment="Left" Margin="0,3,0,0" VerticalAlignment="Top" TextWrapping="Wrap"/>
+                    <TextBox Text="{Binding Rule2TimeLimit}" HorizontalAlignment="Left" Margin="0,2,0,0" VerticalAlignment="Top" TextWrapping="NoWrap" MaxLength="3" Width="30" PreviewTextInput="NumberValidationTextBox"/>
+                    <TextBlock Text=" minutes" HorizontalAlignment="Left" Margin="0,3,0,0" VerticalAlignment="Top" TextWrapping="Wrap"/>
+                    <CheckBox HorizontalAlignment="Left" Margin="10,4,0,0" VerticalAlignment="Top" Content="case-sensitive" IsChecked="{Binding Rule2CaseSensitive}"/>
+                </StackPanel>
+            </StackPanel>
+        </StackPanel>
+        <StackPanel HorizontalAlignment="Left" Margin="40,230,0,0" VerticalAlignment="Top" Orientation="Vertical">
+            <TextBlock Text="Speech synthesis" FontSize="18" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" TextWrapping="Wrap"/>
+            <StackPanel HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Orientation="Vertical">
+                <CheckBox HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" Content="Enable speech synthesis" IsChecked="{Binding SpeechSynthesisEnabled}" x:Name="EnableSpeechSynthesisCheckbox"/>
+                <StackPanel HorizontalAlignment="Left" Margin="0,12,0,0" VerticalAlignment="Top" Orientation="Vertical" IsEnabled="{Binding ElementName=EnableSpeechSynthesisCheckbox, Path=IsChecked}">
+                    <StackPanel HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" Orientation="Horizontal">
+                        <RadioButton x:Name="VoiceType1" GroupName="VoiceType" Content="Microsoft voice" IsChecked="{Binding SpeechSynthesisType, Converter={StaticResource EnumBooleanConverter}, ConverterParameter=0}"/>
+                        <StackPanel HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" Orientation="Horizontal" IsEnabled="{Binding ElementName=VoiceType1, Path=IsChecked}">
+                            <ComboBox Width="250" Margin="0,0,0,0"  ItemsSource="{Binding Source={x:Static local:MicrosoftSpeechManager.Instance}, Path=AvailableVoices}" SelectedItem="{Binding MicrosoftVoice}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                        </StackPanel>
+                    </StackPanel>
+                    <StackPanel HorizontalAlignment="Left" Margin="0,5,0,0" VerticalAlignment="Top" Orientation="Horizontal">
+                        <RadioButton x:Name="VoiceType2" GroupName="VoiceType" Content="Amazon voice" IsChecked="{Binding SpeechSynthesisType, Converter={StaticResource EnumBooleanConverter}, ConverterParameter=1}"/>
+                        <StackPanel HorizontalAlignment="Left" Margin="17,0,0,0" VerticalAlignment="Top" Orientation="Horizontal" IsEnabled="{Binding ElementName=VoiceType2, Path=IsChecked}">
+                            <ComboBox Width="250" Margin="0,0,0,0"  ItemsSource="{Binding Source={x:Static local:AmazonSpeechManager.Instance}, Path=AvailableVoices}" SelectedItem="{Binding AmazonVoice}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                        </StackPanel>
+                    </StackPanel>
+                    <StackPanel HorizontalAlignment="Left" Margin="0,5,0,0" VerticalAlignment="Top" Orientation="Horizontal">
+                        <RadioButton x:Name="VoiceType3" GroupName="VoiceType" Content="Google voice" IsChecked="{Binding SpeechSynthesisType, Converter={StaticResource EnumBooleanConverter}, ConverterParameter=2}"/>
+                        <StackPanel HorizontalAlignment="Left" Margin="22,0,0,0" VerticalAlignment="Top" Orientation="Horizontal" IsEnabled="{Binding ElementName=VoiceType3, Path=IsChecked}">
+                            <ComboBox Width="250" Margin="0,0,0,0"  ItemsSource="{Binding Source={x:Static local:GoogleSpeechManager.Instance}, Path=AvailableVoices}" SelectedItem="{Binding GoogleVoice}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                        </StackPanel>
+                    </StackPanel>
+                </StackPanel>
+            </StackPanel>
+        <Button Content="Test" HorizontalAlignment="Left" Height="20" Margin="0,15,0,0" VerticalAlignment="Top" Width="60" Click="TestVoiceButton_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>

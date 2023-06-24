@@ -1,0 +1,21 @@
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>PickChatter Twitch authorization</title>
+</head>
+
+<body>
+    Redirecting...
+    <script type="text/javascript">
+        let url = '';
+		if (document.URL.includes('/redirect#')) {
+            url = location.href.replace('/redirect#', '?');
+        } else {
+            url = location.host + '/error';
+        }
+		location.replace(url);
+    </script>
+</body>
+
+</html>

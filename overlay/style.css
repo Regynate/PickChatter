@@ -1,0 +1,44 @@
+html,
+body {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  font: 900 8vmin Lato, Calibri, sans-serif;
+  margin: 0;
+  text-shadow: 0 0 5px black,
+    0 0 5px black,
+    0 0 5px black,
+    0 0 5px black,
+    0 0 5px black,
+    0 0 5px black,
+    0 0 5px black,
+    0 0 5px black,
+    0 0 5px black,
+    0 0 5px black;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+#chatter-avatar {
+  height: 30vmin;
+  width: auto;
+}
+
+main {
+  position: absolute;
+  width: 100vw;
+  height: auto;
+  display: grid;
+  justify-content: center;
+  justify-items: center;
+  grid-template-rows: auto auto auto;
+}
+
+#chatter-name {
+  color: coral;
+}
+
+#chatter-message {
+  color: seashell;
+  font-size: 90%;
+}
