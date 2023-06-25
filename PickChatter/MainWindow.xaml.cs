@@ -44,7 +44,11 @@ namespace PickChatter
 
         private void PickRandomChatterButton_Click(object sender, RoutedEventArgs e)
         {
-            ChatterPicker.Instance.PickRandomChatter();
+            Dispatcher.Invoke(() => SpeechManager.Instance.Stop());
+            if (!ChatterPicker.Instance.PickRandomChatter())
+            {
+                App.ShowMessage("There are no chatters to select from");
+            }
         }
 
         private void SettingsButton_Click(object sender, RoutedEventArgs e)
@@ -67,6 +71,18 @@ namespace PickChatter
             else
             {
                 SayLastMessage();
+            }
+        }
+
+        private void AutoPickButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (AutoPicker.Instance.Running)
+            {
+                AutoPicker.Instance.Stop();
+            }
+            else
+            {
+                AutoPicker.Instance.Start();
             }
         }
     }

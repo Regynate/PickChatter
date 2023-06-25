@@ -286,5 +286,65 @@ namespace PickChatter.Properties {
                 this["Rule3SubscriberTime"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool AutoPickingEnabled {
+            get {
+                return ((bool)(this["AutoPickingEnabled"]));
+            }
+            set {
+                this["AutoPickingEnabled"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ExcludeUsersEnabled {
+            get {
+                return ((bool)(this["ExcludeUsersEnabled"]));
+            }
+            set {
+                this["ExcludeUsersEnabled"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string ExcludeUsersString {
+            get {
+                return ((string)(this["ExcludeUsersString"]));
+            }
+            set {
+                this["ExcludeUsersString"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("30")]
+        public int AutoPickingTime {
+            get {
+                return ((int)(this["AutoPickingTime"]));
+            }
+            set {
+                this["AutoPickingTime"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int AutoPickingTimeType {
+            get {
+                return ((int)(this["AutoPickingTimeType"]));
+            }
+            set {
+                this["AutoPickingTimeType"] = value;
+            }
+        }
     }
 }

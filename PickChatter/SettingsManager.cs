@@ -20,12 +20,15 @@ namespace PickChatter
             EndsWith
         }
 
-        public static List<string> ContainTypeItems { get =>
-                new()
-                {
-                    "equals", "contains", "starts with", "ends with"
-                };
+        public enum TimeType
+        {
+            Seconds,
+            Minutes
         }
+
+        public static List<string> ContainTypeItems => new() { "equals", "contains", "starts with", "ends with" };
+
+        public static List<string> AutoPickingTimeTypeItems => new() { "seconds", "minutes" };
 
         private readonly HashSet<string> propertiesChanged = new();
 
@@ -155,6 +158,36 @@ namespace PickChatter
             set => SetProperty(nameof(Settings.Default.Rule3SubscriberTime), value);
         }
 
+        public bool AutoPickingEnabled
+        {
+            get => GetProperty<bool>(nameof(Settings.Default.AutoPickingEnabled));
+            set => SetProperty(nameof(Settings.Default.AutoPickingEnabled), value);
+        }
+
+        public int AutoPickingTime
+        {
+            get => GetProperty<int>(nameof(Settings.Default.AutoPickingTime));
+            set => SetProperty(nameof(Settings.Default.AutoPickingTime), value);
+        }
+
+        public int AutoPickingTimeType
+        {
+            get => GetProperty<int>(nameof(Settings.Default.AutoPickingTimeType));
+            set => SetProperty(nameof(Settings.Default.AutoPickingTimeType), value);
+        }
+
+        public bool ExcludeUsersEnabled
+        {
+            get => GetProperty<bool>(nameof(Settings.Default.ExcludeUsersEnabled));
+            set => SetProperty(nameof(Settings.Default.ExcludeUsersEnabled), value);
+        }
+
+        public string ExcludeUsersString
+        {
+            get => GetProperty<string>(nameof(Settings.Default.ExcludeUsersString));
+            set => SetProperty(nameof(Settings.Default.ExcludeUsersString), value);
+        }
+
         public bool HasModifiedProperties()
         {
             return propertiesChanged.Count > 0;
@@ -180,6 +213,12 @@ namespace PickChatter
         public void Save()
         {
             Settings.Default.Save();
+
+            foreach (string property in propertiesChanged)
+            {
+                PropertySaved?.Invoke(this, new(property));
+            }
+
             propertiesChanged.Clear();
         }
 
@@ -207,6 +246,7 @@ namespace PickChatter
             }
         }
         public event PropertyChangedEventHandler? PropertyChanged;
+        public event PropertyChangedEventHandler? PropertySaved;
 
         private static SettingsManager instance = new();
         public static SettingsManager Instance { get => instance; }

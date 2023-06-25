@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@700&family=Lato:wght@900&display=swap" rel="stylesheet">
+    <title>Timer Overlay</title>
+    <script type="text/javascript">
+        function initSocket() {
+            const socket = new WebSocket('ws://localhost:9871');
+
+            socket.onclose   = () => { console.log('socket closed; reconnecting'); window.setTimeout(() => initSocket(), 500) }
+            socket.onerror   = () => { console.log('error in socket') }
+            socket.onopen    = () => { console.log('connected to socket') }
+            socket.onmessage = event => { 
+                const message = JSON.parse(event.data);
+                switch (message.type) {
+                    case 'remaining-time':
+                        document.getElementById('time').innerText = message.time;
+                        break;
+                }
+            }
+        }
+
+            initSocket();
+    </script>
+    <style>
+        body {
+            text-shadow: 0 0 5px black,
+            0 0 5px black,
+            0 0 5px black,
+            0 0 5px black,
+            0 0 5px black,
+            0 0 5px black,
+            0 0 5px black,
+            0 0 5px black,
+            0 0 5px black,
+            0 0 5px black;
+            font: 900 100vh Lato, Calibri, sans-serif;
+        }
+    </style>
+  </head>
+  <body>
+    <main>
+        <span id="time" style="color: seashell;">0:00</span>
+    </main>
+  </body>
+</html>

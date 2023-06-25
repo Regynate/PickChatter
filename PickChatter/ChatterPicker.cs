@@ -40,17 +40,22 @@ namespace PickChatter
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        private void OnPropertyChanged([CallerMemberName] string? name = null)
+        private void NotifyPropertyChanged([CallerMemberName] string? name = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-            if (name == nameof(LastMessage))
-            {
-                MessageChanged?.Invoke(this, new(LastMessage ?? "", currentChatter?.Color ?? ""));
-            }
-            if (name == nameof(ChatterName))
-            {
-                ChatterChanged?.Invoke(this, new(ChatterName ?? ""));
-            }
+        }
+
+        private void NotifyMessageChanged()
+        {
+            MessageChanged?.Invoke(this, new(LastMessage ?? "", currentChatter?.Color ?? ""));
+            NotifyPropertyChanged(nameof(LastMessage));
+        }
+
+        private void NotifyChatterChanged()
+        {
+            ChatterChanged?.Invoke(this, new(ChatterName ?? ""));
+            NotifyPropertyChanged(nameof(ChatterName));
+            NotifyMessageChanged();
         }
 
         public event EventHandler<MessageChangedEventArgs>? MessageChanged;
@@ -145,20 +150,16 @@ namespace PickChatter
             }
         }
 
-        public string? LastMessage { get => currentChatter?.LastMessage; }
+        public string? LastMessage => currentChatter?.LastMessage;
 
-        public string StatusBarString 
-        {
-            get => $"Messages: {processedMessagesCount}, Users: {chatters.Count}, Filtered: {GetFilteredChatters().Count}";
-        }
+        public string StatusBarString => $"Messages: {processedMessagesCount}, Users: {chatters.Count}, Filtered: {GetFilteredChatters().Count}";
 
         public void ClearChatters()
         {
             chatters.Clear();
             processedMessagesCount = 0;
             currentChatter = null;
-            OnPropertyChanged(nameof(ChatterName));
-            OnPropertyChanged(nameof(LastMessage));
+            NotifyChatterChanged();
         }
 
         private readonly Dictionary<string, Chatter> chatters = new();
@@ -171,7 +172,7 @@ namespace PickChatter
             {
                 while (true)
                 {
-                    OnPropertyChanged(nameof(StatusBarString));
+                    NotifyPropertyChanged(nameof(StatusBarString));
                     Thread.Sleep(200);
                 }
             }
@@ -241,9 +242,18 @@ namespace PickChatter
                 SettingsManager.Instance.Rule3VIP && chatter.IsVIP;
         }
 
+        private bool Rule4(Chatter chatter)
+        {
+            return !SettingsManager.Instance.ExcludeUsersEnabled || 
+                !SettingsManager.Instance.ExcludeUsersString
+                .ToLower()
+                .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .Contains(chatter.Username);
+        }
+
         private bool SatisfiesRules(Chatter chatter)
         {
-            return chatter.HasMessage && Rule1(chatter) && Rule2(chatter) && Rule3(chatter);
+            return chatter.HasMessage && Rule1(chatter) && Rule2(chatter) && Rule3(chatter) && Rule4(chatter);
         }
 
         private Dictionary<string, Chatter> GetFilteredChatters()
@@ -266,15 +276,15 @@ namespace PickChatter
 
             if (username == currentChatter?.Username)
             { 
-                OnPropertyChanged(nameof(LastMessage));
+                NotifyMessageChanged();
             }
 
             processedMessagesCount++;
 
-            OnPropertyChanged(nameof(StatusBarString));
+            NotifyPropertyChanged(nameof(StatusBarString));
         }
 
-        public void PickRandomChatter()
+        public bool PickRandomChatter()
         {
             var filtered = GetFilteredChatters();
 
@@ -285,10 +295,11 @@ namespace PickChatter
                     .Select(kvp => kvp.Value)
                     .Random()
                     .Username);
+                return true;
             }
             else
             {
-                App.ShowMessage("There are no chatters to select from");
+                return false;
             }
         }
 
@@ -306,9 +317,8 @@ namespace PickChatter
                 currentChatter = chatters[username];
             }
 
-            OnPropertyChanged(nameof(ChatterName));
-            OnPropertyChanged(nameof(LastMessage));
-            OnPropertyChanged(nameof(StatusBarString));
+            NotifyChatterChanged();
+            NotifyPropertyChanged(nameof(StatusBarString));
         }
     }
 }

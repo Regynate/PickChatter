@@ -81,6 +81,10 @@ namespace PickChatter
             Broadcast(new { type = "chatter", chatter });
         }
 
+        internal void SendRemainingTime(string time)
+        {
+            Broadcast(new { type = "remaining-time", time });
+        }
 
         private static readonly WebSocketServer instance = new WebSocketServer();
         public static WebSocketServer Instance => instance;

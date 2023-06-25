@@ -25,8 +25,8 @@ namespace PickChatter
             TwitchClient.Instance.TryInitialize();
             ChatterPicker.Instance.MessageChanged += (_, args) =>
             {
-                Invoke(() => SpeechManager.Instance.Speak(args.Message));
                 Invoke(() => WebSocketServer.Instance.SendMessage(args.Message, args.Color));
+                Invoke(() => SpeechManager.Instance.Speak(args.Message));
             };
 
             ChatterPicker.Instance.ChatterChanged += (_, args) =>
@@ -38,8 +38,18 @@ namespace PickChatter
             {
                 if (ChatterPicker.Instance.ChatterName != null)
                 {
-                    WebSocketServer.Instance.SendChatter(ChatterPicker.Instance.ChatterName);
+                    Invoke(() => WebSocketServer.Instance.SendChatter(ChatterPicker.Instance.ChatterName));
                 }
+                else
+                {
+                    Invoke(() => WebSocketServer.Instance.SendChatter(""));
+                    Invoke(() => WebSocketServer.Instance.SendMessage("", ""));
+                }
+            };
+
+            AutoPicker.Instance.RemainingTimeChanged += (_, _) =>
+            {
+                Invoke(() => WebSocketServer.Instance.SendRemainingTime(AutoPicker.Instance.RemainingTimeString));
             };
         }
 
@@ -66,6 +76,12 @@ namespace PickChatter
         public static MessageBoxResult ShowMessage(string message, string title, MessageBoxButton button, MessageBoxImage image, MessageBoxResult result)
         {
             return Invoke(() => MessageBox.Show(Current.MainWindow, message, title, button, image, result));
+        }
+
+        private void Application_Exit(object sender, ExitEventArgs e)
+        {
+            WebSocketServer.Instance.SendMessage("", "");
+            WebSocketServer.Instance.SendChatter("");
         }
     }
 }
