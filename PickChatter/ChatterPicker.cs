@@ -202,7 +202,7 @@ namespace PickChatter
             }
 
             return chatter.ContainsMessage(
-                    TimeSpan.FromMinutes(SettingsManager.Instance.Rule1TimeLimit),
+                    TimeSpan.FromMinutes(SettingsManager.Instance.Rule2TimeLimit),
                     s =>
                     {
                         string sComp = SettingsManager.Instance.Rule2String;

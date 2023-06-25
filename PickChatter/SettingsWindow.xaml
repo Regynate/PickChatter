@@ -58,8 +58,10 @@
         <TextBlock Text="Auto-selecting" FontSize="18" HorizontalAlignment="Left" Margin="40,270,0,0" VerticalAlignment="Top" TextWrapping="Wrap"/>
         <StackPanel HorizontalAlignment="Left" Margin="40,300,0,0" VerticalAlignment="Top" Orientation="Horizontal">
             <CheckBox x:Name="AutoPickingCheckbox" Content="Pick a new chatter automatically once every " HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Center" IsChecked="{Binding AutoPickingEnabled}"/>
-            <TextBox Text="{Binding AutoPickingTime}" IsEnabled="{Binding ElementName=AutoPickingCheckbox, Path=IsChecked}" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Center" TextWrapping="NoWrap" MaxLength="3" Width="30" PreviewTextInput="NumberValidationTextBox"/>
-            <ComboBox Width="90" Margin="5,-1,0,0" ItemsSource="{Binding Source={x:Static local:SettingsManager.AutoPickingTimeTypeItems}}" SelectedIndex="{Binding AutoPickingTimeType}" VerticalAlignment="Center"/>
+            <StackPanel HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Center" Orientation="Horizontal" IsEnabled="{Binding ElementName=AutoPickingCheckbox, Path=IsChecked}">
+                <TextBox Text="{Binding AutoPickingTime}" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Center" TextWrapping="NoWrap" MaxLength="3" Width="30" PreviewTextInput="NumberValidationTextBox"/>
+                <ComboBox Width="90" Margin="5,-1,0,0" ItemsSource="{Binding Source={x:Static local:SettingsManager.AutoPickingTimeTypeItems}}" SelectedIndex="{Binding AutoPickingTimeType}" VerticalAlignment="Center"/>
+            </StackPanel>
         </StackPanel>
         <StackPanel HorizontalAlignment="Left" Margin="40,330,0,0" VerticalAlignment="Top" Orientation="Vertical">
             <TextBlock Text="Speech synthesis" FontSize="18" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" TextWrapping="Wrap"/>

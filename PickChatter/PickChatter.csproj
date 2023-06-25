@@ -56,4 +56,9 @@
     </None>
   </ItemGroup>
 
+  <Target Name="CopyEverythingAfterPublish" AfterTargets="Publish">
+    <Exec Command="XCOPY $(ProjectDir)..\overlay\*.* $(PublishDir)..\overlay\ /S /Y" />
+    <Exec Command="XCOPY $(ProjectDir)*.html $(PublishDir) /Y" />
+  </Target>
+
 </Project>
