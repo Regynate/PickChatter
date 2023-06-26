@@ -188,6 +188,12 @@ namespace PickChatter
             set => SetProperty(nameof(Settings.Default.ExcludeUsersString), value);
         }
 
+        public bool ExcludeCommandsEnabled
+        {
+            get => GetProperty<bool>(nameof(Settings.Default.ExcludeCommandsEnabled));
+            set => SetProperty(nameof(Settings.Default.ExcludeCommandsEnabled), value);
+        }
+
         public bool HasModifiedProperties()
         {
             return propertiesChanged.Count > 0;

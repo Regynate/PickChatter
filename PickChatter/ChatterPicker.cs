@@ -172,7 +172,7 @@ namespace PickChatter
         private ChatterPicker()
         {
             TwitchClient.Instance.MessageReceived += OnMessageReceived;
-            //TwitchClient.Instance.UserBanned += (_, args) => OnUserBanned(args.UserBan.Username);
+            TwitchClient.Instance.UserBanned += (_, args) => OnUserBanned(args.UserBan.Username);
             TwitchClient.Instance.UserTimedOut += (_, args) => OnUserBanned(args.UserTimeout.Username);
             Task.Run(() =>
             {
@@ -273,6 +273,12 @@ namespace PickChatter
 
         private void OnMessageReceived(object? sender, OnMessageReceivedArgs e)
         {
+            // TODO: don't like it very much
+            if (SettingsManager.Instance.ExcludeCommandsEnabled && e.ChatMessage.Message.StartsWith('!'))
+            {
+                return;
+            }
+
             string username = e.ChatMessage.Username;
 
             if (chatters.ContainsKey(username))

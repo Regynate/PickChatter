@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:PickChatter"
         mc:Ignorable="d"
         DataContext="{Binding Source={x:Static local:SettingsManager.Instance}}"
-        Title="Settings" Height="530" Width="800" Closing="Window_Closing">
+        Title="Settings" Height="540" Width="800" Closing="Window_Closing">
     <Window.Resources>
         <local:EnumBooleanConverter x:Key="EnumBooleanConverter" />
     </Window.Resources>
@@ -54,16 +54,17 @@
                 <CheckBox x:Name="ExcludeBotsRule" Content="Exclude users (comma-separated): " HorizontalAlignment="Left" Margin="0,1,0,0" VerticalAlignment="Center" IsChecked="{Binding ExcludeUsersEnabled}"/>
                 <TextBox HorizontalAlignment="Left" IsEnabled="{Binding ElementName=ExcludeBotsRule, Path=IsChecked}" Margin="5,0,0,0" VerticalAlignment="Center" TextWrapping="NoWrap" Width="150" Text="{Binding ExcludeUsersString}"/>
             </StackPanel>
+            <CheckBox x:Name="ExcludeCommandMessagesRule" Content="Ignore command messages (starting with &quot;!&quot;)" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Center" IsChecked="{Binding ExcludeCommandsEnabled}"/>
         </StackPanel>
-        <TextBlock Text="Auto-selecting" FontSize="18" HorizontalAlignment="Left" Margin="40,230,0,0" VerticalAlignment="Top" TextWrapping="Wrap"/>
-        <StackPanel HorizontalAlignment="Left" Margin="40,260,0,0" VerticalAlignment="Top" Orientation="Horizontal">
+        <TextBlock Text="Auto-selecting" FontSize="18" HorizontalAlignment="Left" Margin="40,252,0,0" VerticalAlignment="Top" TextWrapping="Wrap"/>
+        <StackPanel HorizontalAlignment="Left" Margin="40,282,0,0" VerticalAlignment="Top" Orientation="Horizontal">
             <CheckBox x:Name="AutoPickingCheckbox" Content="Pick a new chatter automatically once every " HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Center" IsChecked="{Binding AutoPickingEnabled}"/>
             <StackPanel HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Center" Orientation="Horizontal" IsEnabled="{Binding ElementName=AutoPickingCheckbox, Path=IsChecked}">
                 <TextBox Text="{Binding AutoPickingTime}" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Center" TextWrapping="NoWrap" MaxLength="3" Width="30" PreviewTextInput="NumberValidationTextBox"/>
                 <ComboBox Width="90" Margin="5,-1,0,0" ItemsSource="{Binding Source={x:Static local:SettingsManager.AutoPickingTimeTypeItems}}" SelectedIndex="{Binding AutoPickingTimeType}" VerticalAlignment="Center"/>
             </StackPanel>
         </StackPanel>
-        <StackPanel HorizontalAlignment="Left" Margin="40,295,0,0" VerticalAlignment="Top" Orientation="Vertical">
+        <StackPanel HorizontalAlignment="Left" Margin="40,317,0,0" VerticalAlignment="Top" Orientation="Vertical">
             <TextBlock Text="Speech synthesis" FontSize="18" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" TextWrapping="Wrap"/>
             <StackPanel HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Orientation="Vertical">
                 <CheckBox HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" Content="Enable speech synthesis" IsChecked="{Binding SpeechSynthesisEnabled}" x:Name="EnableSpeechSynthesisCheckbox"/>

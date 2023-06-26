@@ -346,5 +346,17 @@ namespace PickChatter.Properties {
                 this["AutoPickingTimeType"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ExcludeCommandsEnabled {
+            get {
+                return ((bool)(this["ExcludeCommandsEnabled"]));
+            }
+            set {
+                this["ExcludeCommandsEnabled"] = value;
+            }
+        }
     }
 }
