@@ -111,6 +111,11 @@ namespace PickChatter
                 SubscriberTime = message.SubscribedMonthCount;
             }
 
+            public int MessageCount()
+            {
+                return messages.Count;
+            }
+
             public int MessageCount(TimeSpan timeLimit)
             {
                 var now = DateTime.Now;
@@ -167,7 +172,8 @@ namespace PickChatter
         private ChatterPicker()
         {
             TwitchClient.Instance.MessageReceived += OnMessageReceived;
-            TwitchClient.Instance.UserBanned += OnUserBanned;
+            //TwitchClient.Instance.UserBanned += (_, args) => OnUserBanned(args.UserBan.Username);
+            TwitchClient.Instance.UserTimedOut += (_, args) => OnUserBanned(args.UserTimeout.Username);
             Task.Run(() =>
             {
                 while (true)
@@ -179,9 +185,13 @@ namespace PickChatter
             );
         }
 
-        private void OnUserBanned(object? sender, OnUserBannedArgs e)
+        private void OnUserBanned(string username)
         {
-            chatters.Remove(e.UserBan.Username);
+            if (chatters.TryGetValue(username, out Chatter? chatter))
+            {
+                processedMessagesCount -= chatter.MessageCount();
+                chatters.Remove(username);
+            }
         }
 
         private bool Rule1(Chatter chatter)
@@ -228,7 +238,7 @@ namespace PickChatter
                         }
                     });
         }
-
+        
         private bool Rule3(Chatter chatter)
         {
             if (!SettingsManager.Instance.Rule3Enabled)
