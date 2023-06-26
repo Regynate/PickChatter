@@ -79,6 +79,7 @@ namespace PickChatter
             if (AutoPicker.Instance.Running)
             {
                 AutoPicker.Instance.Stop();
+                ChatterPicker.Instance.PickChatter(null);
             }
             else
             {

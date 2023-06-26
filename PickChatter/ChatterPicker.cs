@@ -296,8 +296,6 @@ namespace PickChatter
             }
 
             processedMessagesCount++;
-
-            NotifyPropertyChanged(nameof(StatusBarString));
         }
 
         public bool PickRandomChatter()
@@ -319,8 +317,15 @@ namespace PickChatter
             }
         }
 
-        public void PickChatter(string name)
+        public void PickChatter(string? name)
         {
+            if (name == null)
+            {
+                currentChatter = null;
+                NotifyChatterChanged();
+                return;
+            }
+
             string username = name.ToLower();
 
             if (chatters.ContainsKey(username))
@@ -334,7 +339,6 @@ namespace PickChatter
             }
 
             NotifyChatterChanged();
-            NotifyPropertyChanged(nameof(StatusBarString));
         }
     }
 }
