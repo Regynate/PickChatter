@@ -26,9 +26,17 @@ namespace PickChatter
             Minutes
         }
 
+        public enum ChatterModeType
+        {
+            Chatter,
+            Message
+        }
+
         public static List<string> ContainTypeItems => new() { "equals", "contains", "starts with", "ends with" };
 
         public static List<string> AutoPickingTimeTypeItems => new() { "seconds", "minutes" };
+
+        public static List<string> ChatterModeTypeItems => new() { "Capture all messages from the selected person", "Capture only the first message from the selected person" };
 
         private readonly HashSet<string> propertiesChanged = new();
 
@@ -192,6 +200,12 @@ namespace PickChatter
         {
             get => GetProperty<bool>(nameof(Settings.Default.ExcludeCommandsEnabled));
             set => SetProperty(nameof(Settings.Default.ExcludeCommandsEnabled), value);
+        }
+        
+        public int ChatterMode
+        {
+            get => GetProperty<int>(nameof(Settings.Default.ChatterMode));
+            set => SetProperty(nameof(Settings.Default.ChatterMode), value);
         }
 
         public bool HasModifiedProperties()

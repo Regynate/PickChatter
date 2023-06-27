@@ -290,7 +290,7 @@ namespace PickChatter
                 chatters.Add(username, new Chatter(username, e.ChatMessage));
             }
 
-            if (username == currentChatter?.Username)
+            if (username == currentChatter?.Username && SettingsManager.Instance.ChatterMode == (int)SettingsManager.ChatterModeType.Chatter)
             { 
                 NotifyMessageChanged();
             }

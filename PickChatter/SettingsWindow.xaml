@@ -11,20 +11,26 @@
         <local:EnumBooleanConverter x:Key="EnumBooleanConverter" />
     </Window.Resources>
     <Grid>
-        <Button Content="Connect To Twitch" HorizontalAlignment="Left" Height="20" Margin="360,36,0,0" VerticalAlignment="Top" Width="120" Click="ConnectToTwitchButton_Click" x:Name="ConnectToTwitchButton"/>
-        <Label Content="Twitch channel to listen to:" HorizontalAlignment="Left" Height="30" Margin="40,31,0,0" VerticalAlignment="Top" Width="154"/>
-        <TextBox x:Name="TwitchChannelTextBox" HorizontalAlignment="Left" Margin="199,37,0,0" TextWrapping="NoWrap" Text="{Binding TwitchChannel}" VerticalAlignment="Top" Width="120"/>
+        <StackPanel HorizontalAlignment="Left" Margin="40,35,0,0" VerticalAlignment="Top" Orientation="Horizontal">
+            <TextBlock Text="Twitch channel to listen to:" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top"/>
+            <TextBox x:Name="TwitchChannelTextBox" HorizontalAlignment="Left" Margin="10,0,0,0" TextWrapping="NoWrap" Text="{Binding TwitchChannel}" VerticalAlignment="Top" Width="120"/>
+            <Button Content="Connect To Twitch" HorizontalAlignment="Left" Height="20" Margin="10,0,0,0" VerticalAlignment="Top" Width="120" Click="ConnectToTwitchButton_Click" x:Name="ConnectToTwitchButton"/>
+        </StackPanel>
+        <StackPanel HorizontalAlignment="Left" Margin="40,70,0,0" VerticalAlignment="Top" Orientation="Horizontal">
+            <TextBlock Text="Capture mode:" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top"/>
+            <ComboBox Width="350" Margin="10,-2,0,0" ItemsSource="{Binding Source={x:Static local:SettingsManager.ChatterModeTypeItems}}" SelectedIndex="{Binding ChatterMode}"  VerticalAlignment="Center"/>
+        </StackPanel>
         <Button x:Name="SaveButton" Content="Save" Margin="0,0,10,10" FontSize="16" Height="30" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="100" Click="SaveButton_Click"/>
         <Button x:Name="CancelButton" Content="Cancel" Margin="0,0,120,10" FontSize="16" Height="30" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="100" Click="CancelButton_Click"/>
-        <TextBlock Text="Pick user if:" FontSize="18" HorizontalAlignment="Left" Margin="40,80,0,0" VerticalAlignment="Top" TextWrapping="Wrap"/>
-        <StackPanel HorizontalAlignment="Left" Margin="40,110,0,0" VerticalAlignment="Top" Orientation="Vertical">
+        <TextBlock Text="Pick user if:" FontSize="18" HorizontalAlignment="Left" Margin="40,98,0,0" VerticalAlignment="Top" TextWrapping="Wrap"/>
+        <StackPanel HorizontalAlignment="Left" Margin="40,128,0,0" VerticalAlignment="Top" Orientation="Vertical">
             <StackPanel HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" Orientation="Horizontal">
                 <CheckBox x:Name="Rule1Checkbox" Content="they sent at least " HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Center" IsChecked="{Binding Rule1Enabled}"/>
                 <StackPanel x:Name="Rule1Panel" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Center" Orientation="Horizontal" IsEnabled="{Binding ElementName=Rule1Checkbox, Path=IsChecked}">
                     <TextBox Text="{Binding Rule1MessageCount}" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Center" TextWrapping="NoWrap" MaxLength="3" Width="30" PreviewTextInput="NumberValidationTextBox"/>
-                    <TextBlock Text=" messages during past " HorizontalAlignment="Left" Margin="0,1,0,0" VerticalAlignment="Center" TextWrapping="Wrap"/>
+                    <TextBlock Text=" messages during past " HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Center" TextWrapping="Wrap"/>
                     <TextBox Text="{Binding Rule1TimeLimit}" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Center" TextWrapping="NoWrap" MaxLength="3" Width="30" PreviewTextInput="NumberValidationTextBox"/>
-                    <TextBlock Text=" minutes" HorizontalAlignment="Left" Margin="0,1,0,0" VerticalAlignment="Center" TextWrapping="Wrap"/>
+                    <TextBlock Text=" minutes" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Center" TextWrapping="Wrap"/>
                 </StackPanel>
             </StackPanel>
             <StackPanel HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Center" Orientation="Horizontal">
@@ -41,13 +47,13 @@
             <StackPanel HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Center" Orientation="Horizontal">
                 <CheckBox x:Name="Rule3Checkbox" Content="they are " HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Center" IsChecked="{Binding Rule3Enabled}"/>
                 <StackPanel x:Name="Rule3Panel" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Center" Orientation="Horizontal" IsEnabled="{Binding ElementName=Rule3Checkbox, Path=IsChecked}">
-                    <CheckBox x:Name="Rule3SubscriberCheckbox" HorizontalAlignment="Left" Margin="0,1,0,0" VerticalAlignment="Center" Content="a subscriber (at least " IsChecked="{Binding Rule3Subscriber}"/>
+                    <CheckBox x:Name="Rule3SubscriberCheckbox" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Center" Content="a subscriber (at least " IsChecked="{Binding Rule3Subscriber}"/>
                     <TextBox Text="{Binding Rule3SubscriberTime}" IsEnabled="{Binding ElementName=Rule3SubscriberCheckbox, Path=IsChecked}" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Center" TextWrapping="NoWrap" MaxLength="3" Width="30" PreviewTextInput="NumberValidationTextBox"/>
-                    <TextBlock Text=" months)" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Center" TextWrapping="Wrap"/>
-                    <TextBlock Text=" or " HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Center" TextWrapping="Wrap"/>
-                    <CheckBox HorizontalAlignment="Left" Margin="0,1,0,0" VerticalAlignment="Center" Content="a VIP" IsChecked="{Binding Rule3VIP}"/>
-                    <TextBlock Text=" or " HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Center" TextWrapping="Wrap"/>
-                    <CheckBox HorizontalAlignment="Left" Margin="0,1,0,0" VerticalAlignment="Center" Content="a moderator" IsChecked="{Binding Rule3Moderator}"/>
+                    <TextBlock Text=" months)" HorizontalAlignment="Left" Margin="0,-1,0,0" VerticalAlignment="Center" TextWrapping="Wrap"/>
+                    <TextBlock Text=" or " HorizontalAlignment="Left" Margin="0,-1,0,0" VerticalAlignment="Center" TextWrapping="Wrap"/>
+                    <CheckBox HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Center" Content="a VIP" IsChecked="{Binding Rule3VIP}"/>
+                    <TextBlock Text=" or " HorizontalAlignment="Left" Margin="0,-1,0,0" VerticalAlignment="Center" TextWrapping="Wrap"/>
+                    <CheckBox HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Center" Content="a moderator" IsChecked="{Binding Rule3Moderator}"/>
                 </StackPanel>
             </StackPanel>
             <StackPanel HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Orientation="Horizontal">
@@ -56,15 +62,15 @@
             </StackPanel>
             <CheckBox x:Name="ExcludeCommandMessagesRule" Content="Ignore command messages (starting with &quot;!&quot;)" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Center" IsChecked="{Binding ExcludeCommandsEnabled}"/>
         </StackPanel>
-        <TextBlock Text="Auto-selecting" FontSize="18" HorizontalAlignment="Left" Margin="40,252,0,0" VerticalAlignment="Top" TextWrapping="Wrap"/>
-        <StackPanel HorizontalAlignment="Left" Margin="40,282,0,0" VerticalAlignment="Top" Orientation="Horizontal">
+        <TextBlock Text="Auto-selecting" FontSize="18" HorizontalAlignment="Left" Margin="40,270,0,0" VerticalAlignment="Top" TextWrapping="Wrap"/>
+        <StackPanel HorizontalAlignment="Left" Margin="40,300,0,0" VerticalAlignment="Top" Orientation="Horizontal">
             <CheckBox x:Name="AutoPickingCheckbox" Content="Pick a new chatter automatically once every " HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Center" IsChecked="{Binding AutoPickingEnabled}"/>
             <StackPanel HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Center" Orientation="Horizontal" IsEnabled="{Binding ElementName=AutoPickingCheckbox, Path=IsChecked}">
                 <TextBox Text="{Binding AutoPickingTime}" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Center" TextWrapping="NoWrap" MaxLength="3" Width="30" PreviewTextInput="NumberValidationTextBox"/>
                 <ComboBox Width="90" Margin="5,-1,0,0" ItemsSource="{Binding Source={x:Static local:SettingsManager.AutoPickingTimeTypeItems}}" SelectedIndex="{Binding AutoPickingTimeType}" VerticalAlignment="Center"/>
             </StackPanel>
         </StackPanel>
-        <StackPanel HorizontalAlignment="Left" Margin="40,317,0,0" VerticalAlignment="Top" Orientation="Vertical">
+        <StackPanel HorizontalAlignment="Left" Margin="40,335,0,0" VerticalAlignment="Top" Orientation="Vertical">
             <TextBlock Text="Speech synthesis" FontSize="18" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" TextWrapping="Wrap"/>
             <StackPanel HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Orientation="Vertical">
                 <CheckBox HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" Content="Enable speech synthesis" IsChecked="{Binding SpeechSynthesisEnabled}" x:Name="EnableSpeechSynthesisCheckbox"/>

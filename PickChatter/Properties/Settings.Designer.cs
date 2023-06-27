@@ -358,5 +358,17 @@ namespace PickChatter.Properties {
                 this["ExcludeCommandsEnabled"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int ChatterMode {
+            get {
+                return ((int)(this["ChatterMode"]));
+            }
+            set {
+                this["ChatterMode"] = value;
+            }
+        }
     }
 }
