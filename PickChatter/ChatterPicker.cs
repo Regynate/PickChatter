@@ -20,11 +20,13 @@ namespace PickChatter
         {
             public string Message { get; }
             public string Color { get; }
+            public string TokenizedMessage { get; }
 
-            public MessageChangedEventArgs(string message, string color)
+            public MessageChangedEventArgs(string message, string color, string tokenizedMessage)
             {
                 Message = message;
                 Color = color;
+                TokenizedMessage = tokenizedMessage;
             }
         }
 
@@ -47,7 +49,7 @@ namespace PickChatter
 
         private void NotifyMessageChanged()
         {
-            MessageChanged?.Invoke(this, new(LastMessage ?? "", currentChatter?.Color ?? ""));
+            MessageChanged?.Invoke(this, new(LastMessage ?? "", currentChatter?.Color ?? "", TokenizedLastMessage ?? ""));
             NotifyPropertyChanged(nameof(LastMessage));
         }
 
@@ -99,6 +101,7 @@ namespace PickChatter
             public bool HasMessage { get => messages.Count > 0; }
             public DateTime Timestamp { get => HasMessage ? messages.Last().Timestamp : DateTime.MinValue; }
             public string LastMessage { get => HasMessage ? messages.Last().PlainContent : ""; }
+            public string TokenizedLastMessage { get; private set; }
 
             public void Update(ChatMessage message)
             {
@@ -109,6 +112,7 @@ namespace PickChatter
                 IsModerator = message.IsModerator;
                 IsVIP = message.IsVip;
                 SubscriberTime = message.SubscribedMonthCount;
+                TokenizedLastMessage = TwitchClient.Instance.ConvertToEmoteJson(message);
             }
 
             public int MessageCount()
@@ -156,6 +160,7 @@ namespace PickChatter
         }
 
         public string? LastMessage => currentChatter?.LastMessage;
+        public string? TokenizedLastMessage => currentChatter?.TokenizedLastMessage;
 
         public string StatusBarString => $"Messages: {processedMessagesCount}, Users: {chatters.Count}, Filtered: {GetFilteredChatters().Count}";
 

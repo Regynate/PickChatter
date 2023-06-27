@@ -97,6 +97,8 @@ namespace PickChatter
             client.OnUserBanned += (sender, args) => UserBanned?.Invoke(this, args);
             client.OnUserTimedout += (sender, args) => UserTimedOut?.Invoke(this, args);
 
+            client.WillReplaceEmotes = true;
+
             Task.Run(() =>
             {
                 while (true)
@@ -129,11 +131,6 @@ namespace PickChatter
                 emotesLoaded = false;
                 emotes = new();
                 string userId = (await api.Helix.Users.GetUsersAsync(logins: new List<string>() { channel })).Users[0].Id;
-                var emoteSets = await api.Helix.Chat.GetChannelEmotesAsync(userId);
-                foreach (var emote in emoteSets.ChannelEmotes)
-                {
-                    emotes.TryAdd(emote.Name, emote.Images.Url4X);
-                }
                 
                 var client = new HttpClient();
                 var response = await client.GetAsync($"https://api.betterttv.net/3/cached/emotes/global");
@@ -302,20 +299,24 @@ namespace PickChatter
             }
         }
 
-        private List<IMessageToken> TokenizeMessage(string message)
+        private List<IMessageToken> TokenizeMessage(string message, EmoteSet emoteSet)
         {
-            if (!emotesLoaded)
+            Dictionary<string, string> presentEmotes = emoteSet.Emotes.ToDictionary(
+                e => e.Name, 
+                e => e.ImageUrl.Remove(e.ImageUrl.Length - 3).Insert(e.ImageUrl.Length - 3, "3.0"));
+
+            if (emotesLoaded)
             {
-                return new() { new StringToken(message) };
+                presentEmotes = presentEmotes.Concat(emotes).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
             }
 
-            Regex regex = new Regex(string.Join('|', emotes.Select(e => @"(?<=^|\s)(" + Regex.Escape(e.Key) + @")(?=$|\s)")));
+            Regex regex = new Regex(string.Join('|', presentEmotes.Select(e => @"(?<=^|\s)(" + Regex.Escape(e.Key) + @")(?=$|\s)")));
 
             List<IMessageToken> tokens = new();
 
             foreach(string split in regex.Split(message))
             {
-                if (emotes.TryGetValue(split, out string? url))
+                if (presentEmotes.TryGetValue(split, out string? url))
                 {
                     tokens.Add(new EmoteToken(url));
                 }
@@ -328,9 +329,9 @@ namespace PickChatter
             return tokens;
         }
 
-        public string ConvertToEmoteJson(string message)
+        public string ConvertToEmoteJson(ChatMessage message)
         {
-            var e = Newtonsoft.Json.JsonConvert.SerializeObject(TokenizeMessage(message).ConvertAll(e => e.ToJsonObject()));
+            var e = Newtonsoft.Json.JsonConvert.SerializeObject(TokenizeMessage(message.Message, message.EmoteSet).ConvertAll(e => e.ToJsonObject()));
             return e;
         }
 

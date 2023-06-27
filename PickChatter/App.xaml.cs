@@ -25,7 +25,7 @@ namespace PickChatter
             TwitchClient.Instance.TryInitialize();
             ChatterPicker.Instance.MessageChanged += (_, args) =>
             {
-                Invoke(() => WebSocketServer.Instance.SendMessage(args.Message, args.Color));
+                Invoke(() => WebSocketServer.Instance.SendMessage(args.Message, args.Color, args.TokenizedMessage));
                 Invoke(() => SpeechManager.Instance.Speak(args.Message));
             };
 
@@ -39,12 +39,12 @@ namespace PickChatter
                 if (ChatterPicker.Instance.ChatterName != null)
                 {
                     Invoke(() => WebSocketServer.Instance.SendChatter(args.Connection, ChatterPicker.Instance.ChatterName));
-                    Invoke(() => WebSocketServer.Instance.SendMessage(args.Connection, ChatterPicker.Instance.LastMessage ?? "", ""));
+                    Invoke(() => WebSocketServer.Instance.SendMessage(args.Connection, ChatterPicker.Instance.LastMessage ?? "", "", ChatterPicker.Instance.TokenizedLastMessage ?? ""));
                 }
                 else
                 {
                     Invoke(() => WebSocketServer.Instance.SendChatter(args.Connection, ""));
-                    Invoke(() => WebSocketServer.Instance.SendMessage(args.Connection, "", ""));
+                    Invoke(() => WebSocketServer.Instance.SendMessage(args.Connection, "", "", ""));
                 }
             };
 
@@ -81,7 +81,7 @@ namespace PickChatter
 
         private void Application_Exit(object sender, ExitEventArgs e)
         {
-            WebSocketServer.Instance.SendMessage("", "");
+            WebSocketServer.Instance.SendMessage("", "", "");
             WebSocketServer.Instance.SendChatter("");
             WebSocketServer.Instance.SendRemainingTime("0:00");
         }

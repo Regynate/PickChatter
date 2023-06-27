@@ -86,16 +86,15 @@ namespace PickChatter
             }
         }
 
-        public void SendMessage(string message, string color)
+        public void SendMessage(string message, string color, string tokenized_message)
         {
-            Broadcast(new { type = "message", message, color,
-                tokenized_message = TwitchClient.Instance.ConvertToEmoteJson(message) });
+            Broadcast(new { type = "message", message, color, tokenized_message });
         }
 
-        public void SendMessage(IWebSocketConnection connection, string message, string color)
+        public void SendMessage(IWebSocketConnection connection, string message, string color, string tokenized_message)
         {
             SendConnectionMessage(connection, 
-                new { type = "message", message, color, tokenized_message = TwitchClient.Instance.ConvertToEmoteJson(message) });
+                new { type = "message", message, color, tokenized_message });
         }
 
         public void SendChatter(string chatter)
