@@ -39,6 +39,7 @@ namespace PickChatter
                 if (ChatterPicker.Instance.ChatterName != null)
                 {
                     Invoke(() => WebSocketServer.Instance.SendChatter(args.Connection, ChatterPicker.Instance.ChatterName));
+                    Invoke(() => WebSocketServer.Instance.SendMessage(args.Connection, ChatterPicker.Instance.LastMessage ?? "", ""));
                 }
                 else
                 {
@@ -82,6 +83,7 @@ namespace PickChatter
         {
             WebSocketServer.Instance.SendMessage("", "");
             WebSocketServer.Instance.SendChatter("");
+            WebSocketServer.Instance.SendRemainingTime("");
         }
     }
 }
