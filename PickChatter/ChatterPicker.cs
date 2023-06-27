@@ -93,15 +93,16 @@ namespace PickChatter
             public string Username { get; }
             public string DisplayName { get; private set; }
             private string? color;
-            public string Color { get => color ?? "#ff7f50"; }
+            public string Color => color ?? "#ff7f50";
             public bool IsSubscriber { get; private set; }
             public int SubscriberTime { get; private set; }
             public bool IsModerator { get; private set; }
             public bool IsVIP { get; private set; }
-            public bool HasMessage { get => messages.Count > 0; }
-            public DateTime Timestamp { get => HasMessage ? messages.Last().Timestamp : DateTime.MinValue; }
-            public string LastMessage { get => HasMessage ? messages.Last().PlainContent : ""; }
-            public string TokenizedLastMessage { get; private set; }
+            public bool HasMessage => messages.Count > 0;
+            public DateTime Timestamp => HasMessage ? messages.Last().Timestamp : DateTime.MinValue;
+            public string LastMessage => HasMessage ? messages.Last().PlainContent : "";
+            private EmoteSet? emoteSet;
+            public string? TokenizedLastMessage => HasMessage ? TwitchClient.Instance.ConvertToEmoteJson(LastMessage, emoteSet!) : "";
 
             public void Update(ChatMessage message)
             {
@@ -112,7 +113,7 @@ namespace PickChatter
                 IsModerator = message.IsModerator;
                 IsVIP = message.IsVip;
                 SubscriberTime = message.SubscribedMonthCount;
-                TokenizedLastMessage = TwitchClient.Instance.ConvertToEmoteJson(message);
+                emoteSet = message.EmoteSet;
             }
 
             public int MessageCount()

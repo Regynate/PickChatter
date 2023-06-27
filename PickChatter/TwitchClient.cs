@@ -167,7 +167,20 @@ namespace PickChatter
                     var jobject = JObject.Parse(await response.Content.ReadAsStringAsync());
                     foreach (var emote in jobject.SelectToken($"sets.{jobject["room._id"]}.emoticons")!)
                     {
-                        emotes.TryAdd(emote["name"]!.ToString(), emote["urls"]!["4"]!.ToString());
+                        var urls = emote["urls"]!;
+                        string? url = urls["4"]?.ToString();
+                        if (url == null)
+                        {
+                            url = urls["2"]?.ToString();
+                        }
+                        if (url == null)
+                        {
+                            url = urls["1"]?.ToString();
+                        }
+                        if (url != null)
+                        {
+                            emotes.TryAdd(emote["name"]!.ToString(), url.ToString());
+                        }
                     }
                 }
                 catch { }
@@ -301,9 +314,12 @@ namespace PickChatter
 
         private List<IMessageToken> TokenizeMessage(string message, EmoteSet emoteSet)
         {
-            Dictionary<string, string> presentEmotes = emoteSet.Emotes.ToDictionary(
-                e => e.Name, 
-                e => e.ImageUrl.Remove(e.ImageUrl.Length - 3).Insert(e.ImageUrl.Length - 3, "3.0"));
+            Dictionary<string, string> presentEmotes = new();
+            foreach (Emote e in emoteSet.Emotes)
+            {
+                var l = e.ImageUrl.Length - 3;
+                presentEmotes.TryAdd(e.Name, e.ImageUrl.Remove(l).Insert(l, "3.0"));
+            }
 
             if (emotesLoaded)
             {
@@ -329,10 +345,9 @@ namespace PickChatter
             return tokens;
         }
 
-        public string ConvertToEmoteJson(ChatMessage message)
+        public string ConvertToEmoteJson(string message, EmoteSet emoteSet)
         {
-            var e = Newtonsoft.Json.JsonConvert.SerializeObject(TokenizeMessage(message.Message, message.EmoteSet).ConvertAll(e => e.ToJsonObject()));
-            return e;
+            return Newtonsoft.Json.JsonConvert.SerializeObject(TokenizeMessage(message, emoteSet).ConvertAll(e => e.ToJsonObject()));
         }
 
         public void StartBrowserAuth()
