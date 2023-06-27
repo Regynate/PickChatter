@@ -317,8 +317,7 @@ namespace PickChatter
             Dictionary<string, string> presentEmotes = new();
             foreach (Emote e in emoteSet.Emotes)
             {
-                var l = e.ImageUrl.Length - 3;
-                presentEmotes.TryAdd(e.Name, e.ImageUrl.Remove(l).Insert(l, "3.0"));
+                presentEmotes.TryAdd(e.Name, $"https://static-cdn.jtvnw.net/emoticons/v2/{e.Id}/default/light/3.0");
             }
 
             if (emotesLoaded)
