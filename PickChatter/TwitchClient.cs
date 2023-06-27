@@ -126,58 +126,56 @@ namespace PickChatter
 
         private async Task InitializeEmotes(string channel)
         {
-            try
+            emotesLoaded = false;
+            emotes = new();
+            string userId = (await api.Helix.Users.GetUsersAsync(logins: new List<string>() { channel })).Users[0].Id;
+                
+            var client = new HttpClient();
+            var response = await client.GetAsync($"https://api.betterttv.net/3/cached/emotes/global");
+            if (response.IsSuccessStatusCode)
             {
-                emotesLoaded = false;
-                emotes = new();
-                string userId = (await api.Helix.Users.GetUsersAsync(logins: new List<string>() { channel })).Users[0].Id;
-                
-                var client = new HttpClient();
-                var response = await client.GetAsync($"https://api.betterttv.net/3/cached/emotes/global");
-                if (response.IsSuccessStatusCode)
+                try
                 {
-                    try
+                    var jobject = JArray.Parse(await response.Content.ReadAsStringAsync());
+                    foreach (var emote in jobject)
                     {
-                        var jobject = JArray.Parse(await response.Content.ReadAsStringAsync());
-                        foreach (var emote in jobject)
-                        {
-                            emotes.TryAdd(emote["code"]!.ToString(), $"https://cdn.betterttv.net/emote/{emote["id"]}/3x.webp");
-                        }
+                        emotes.TryAdd(emote["code"]!.ToString(), $"https://cdn.betterttv.net/emote/{emote["id"]}/3x.webp");
                     }
-                    catch { }
                 }
-
-                response = await client.GetAsync($"https://api.betterttv.net/3/cached/users/twitch/{userId}");
-                if (response.IsSuccessStatusCode)
-                {
-                    try
-                    {
-                        var jobject = JObject.Parse(await response.Content.ReadAsStringAsync());
-                        foreach (var emote in jobject["channelEmotes"]!.Concat(jobject["sharedEmotes"]!))
-                        {
-                            emotes.TryAdd(emote["code"]!.ToString(), $"https://cdn.betterttv.net/emote/{emote["id"]}/3x.webp");
-                        }
-                    }
-                    catch { }
-                }
-                
-                response = await client.GetAsync($"https://api.frankerfacez.com/v1/room/id/{userId}");
-                if (response.IsSuccessStatusCode)
-                {
-                    try
-                    {
-                        var jobject = JObject.Parse(await response.Content.ReadAsStringAsync());
-                        foreach (var emote in jobject.SelectToken($"sets.{jobject["room._id"]}.emoticons")!)
-                        {
-                            emotes.TryAdd(emote["name"]!.ToString(), emote["urls"]!["4"]!.ToString());
-                        }
-                    }
-                    catch { }
-                }
-
-                emotesLoaded = true;
+                catch { }
             }
-            catch { }
+
+            response = await client.GetAsync($"https://api.betterttv.net/3/cached/users/twitch/{userId}");
+            if (response.IsSuccessStatusCode)
+            {
+                try
+                {
+                    var jobject = JObject.Parse(await response.Content.ReadAsStringAsync());
+                    foreach (var emote in jobject["channelEmotes"]!.Concat(jobject["sharedEmotes"]!))
+                    {
+                        emotes.TryAdd(emote["code"]!.ToString(), $"https://cdn.betterttv.net/emote/{emote["id"]}/3x.webp");
+                    }
+                }
+                catch { }
+            }
+                
+            response = await client.GetAsync($"https://api.frankerfacez.com/v1/room/id/{userId}");
+            if (response.IsSuccessStatusCode)
+            {
+                try
+                {
+                    var jobject = JObject.Parse(await response.Content.ReadAsStringAsync());
+                    foreach (var emote in jobject.SelectToken($"sets.{jobject["room._id"]}.emoticons")!)
+                    {
+                        emotes.TryAdd(emote["name"]!.ToString(), emote["urls"]!["4"]!.ToString());
+                    }
+                }
+                catch { }
+            }
+
+            client.Dispose();
+
+            emotesLoaded = true;
         }
 
         public void UpdateChannel(bool updateEmotes = true)
@@ -224,10 +222,6 @@ namespace PickChatter
 
         public void Initialize(string username, string oauth, string? channel)
         {
-            if (channel != null)
-            {
-                Task.Run(() => InitializeEmotes(channel));
-            }
 
             connectionAttempt = 0;
             try
@@ -240,6 +234,12 @@ namespace PickChatter
                 App.ShowMessage("Couldn't initialize Twitch client, try again");
                 return;
             }
+
+            if (channel != null)
+            {
+                Task.Run(() => InitializeEmotes(channel));
+            }
+
             do
             {
                 try
