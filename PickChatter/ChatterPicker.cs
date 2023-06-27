@@ -65,11 +65,11 @@ namespace PickChatter
         {
             public Message(string content, DateTime timestamp)
             {
-                Content = content;
+                PlainContent = content;
                 Timestamp = timestamp;
             }
 
-            public string Content { get; }
+            public string PlainContent { get; }
             public DateTime Timestamp { get; }
         }
 
@@ -98,7 +98,7 @@ namespace PickChatter
             public bool IsVIP { get; private set; }
             public bool HasMessage { get => messages.Count > 0; }
             public DateTime Timestamp { get => HasMessage ? messages.Last().Timestamp : DateTime.MinValue; }
-            public string LastMessage { get => HasMessage ? messages.Last().Content : ""; }
+            public string LastMessage { get => HasMessage ? messages.Last().PlainContent : ""; }
 
             public void Update(ChatMessage message)
             {
@@ -129,7 +129,7 @@ namespace PickChatter
                 {
                     return false;
                 }
-                return messages.FindLastIndex(messages.Count - 1, count, m => selector(m.Content)) != -1;
+                return messages.FindLastIndex(messages.Count - 1, count, m => selector(m.PlainContent)) != -1;
             }
         }
 

@@ -41,4 +41,11 @@ main {
 #chatter-message {
   color: seashell;
   font-size: 90%;
+  display: inline-block;
+}
+
+#chatter-message img {
+  height: 9vmin;
+  width: 9vmin;
+  vertical-align: bottom;
 }

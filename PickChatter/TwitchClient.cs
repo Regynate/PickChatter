@@ -5,7 +5,10 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Json;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -32,6 +35,9 @@ namespace PickChatter
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
+        private Dictionary<string, string> emotes = new();
+        private bool emotesLoaded = false;
+
         private int connectionAttempt = 0;
 
         public string StatusBarString { get
@@ -43,7 +49,14 @@ namespace PickChatter
                     {
                         if (client.JoinedChannels.Count > 0)
                         {
-                            return baseString + "connected to " + client.JoinedChannels[0].Channel;
+                            if (emotesLoaded)
+                            {
+                                return baseString + "connected to " + client.JoinedChannels[0].Channel;
+                            }
+                            else
+                            {
+                                return baseString + "connected; loading emotes";
+                            }
                         }
                         else
                         {
@@ -93,7 +106,7 @@ namespace PickChatter
                 }
             });
 
-            client.OnDisconnected += (_, args) => UpdateChannel(); // try to reconnect immediately
+            client.OnDisconnected += (_, args) => UpdateChannel(false); // try to reconnect immediately
 
             HttpServer.Instance.PropertyChanged += (source, args) =>
             {
@@ -109,13 +122,79 @@ namespace PickChatter
             };
         }
 
-        public void UpdateChannel()
+        private async Task InitializeEmotes(string channel)
         {
-            UpdateChannel(SettingsManager.Instance.TwitchChannel);
+            try
+            {
+                emotesLoaded = false;
+                emotes = new();
+                string userId = (await api.Helix.Users.GetUsersAsync(logins: new List<string>() { channel })).Users[0].Id;
+                var emoteSets = await api.Helix.Chat.GetChannelEmotesAsync(userId);
+                foreach (var emote in emoteSets.ChannelEmotes)
+                {
+                    emotes.TryAdd(emote.Name, emote.Images.Url4X);
+                }
+                
+                var client = new HttpClient();
+                var response = await client.GetAsync($"https://api.betterttv.net/3/cached/emotes/global");
+                if (response.IsSuccessStatusCode)
+                {
+                    try
+                    {
+                        var jobject = JArray.Parse(await response.Content.ReadAsStringAsync());
+                        foreach (var emote in jobject)
+                        {
+                            emotes.TryAdd(emote["code"]!.ToString(), $"https://cdn.betterttv.net/emote/{emote["id"]}/3x.webp");
+                        }
+                    }
+                    catch { }
+                }
+
+                response = await client.GetAsync($"https://api.betterttv.net/3/cached/users/twitch/{userId}");
+                if (response.IsSuccessStatusCode)
+                {
+                    try
+                    {
+                        var jobject = JObject.Parse(await response.Content.ReadAsStringAsync());
+                        foreach (var emote in jobject["channelEmotes"]!.Concat(jobject["sharedEmotes"]!))
+                        {
+                            emotes.TryAdd(emote["code"]!.ToString(), $"https://cdn.betterttv.net/emote/{emote["id"]}/3x.webp");
+                        }
+                    }
+                    catch { }
+                }
+                
+                response = await client.GetAsync($"https://api.frankerfacez.com/v1/room/id/{userId}");
+                if (response.IsSuccessStatusCode)
+                {
+                    try
+                    {
+                        var jobject = JObject.Parse(await response.Content.ReadAsStringAsync());
+                        foreach (var emote in jobject.SelectToken($"sets.{jobject["room._id"]}.emoticons")!)
+                        {
+                            emotes.TryAdd(emote["name"]!.ToString(), emote["urls"]!["4"]!.ToString());
+                        }
+                    }
+                    catch { }
+                }
+
+                emotesLoaded = true;
+            }
+            catch { }
         }
 
-        public void UpdateChannel(string newChannel)
+        public void UpdateChannel(bool updateEmotes = true)
         {
+            UpdateChannel(SettingsManager.Instance.TwitchChannel, updateEmotes);
+        }
+
+        public void UpdateChannel(string newChannel, bool updateEmotes = true)
+        {
+            if (updateEmotes)
+            {
+                Task.Run(() => InitializeEmotes(newChannel));
+            }
+
             if (client.IsInitialized && client.IsConnected)
             {
                 if (client.JoinedChannels.Count > 0)
@@ -148,10 +227,16 @@ namespace PickChatter
 
         public void Initialize(string username, string oauth, string? channel)
         {
+            if (channel != null)
+            {
+                Task.Run(() => InitializeEmotes(channel));
+            }
+
             connectionAttempt = 0;
             try
             {
                 client.Initialize(new ConnectionCredentials(username, oauth), channel);
+                api.Settings.AccessToken = oauth;
             }
             catch
             {
@@ -215,6 +300,38 @@ namespace PickChatter
                     Task.Run(() => Initialize(username, token, channel));
                 }
             }
+        }
+
+        private List<IMessageToken> TokenizeMessage(string message)
+        {
+            if (!emotesLoaded)
+            {
+                return new() { new StringToken(message) };
+            }
+
+            Regex regex = new Regex(string.Join('|', emotes.Select(e => @"(?<=^|\s)(" + Regex.Escape(e.Key) + @")(?=$|\s)")));
+
+            List<IMessageToken> tokens = new();
+
+            foreach(string split in regex.Split(message))
+            {
+                if (emotes.TryGetValue(split, out string? url))
+                {
+                    tokens.Add(new EmoteToken(url));
+                }
+                else
+                {
+                    tokens.Add(new StringToken(split));
+                }
+            }
+
+            return tokens;
+        }
+
+        public string ConvertToEmoteJson(string message)
+        {
+            var e = Newtonsoft.Json.JsonConvert.SerializeObject(TokenizeMessage(message).ConvertAll(e => e.ToJsonObject()));
+            return e;
         }
 
         public void StartBrowserAuth()

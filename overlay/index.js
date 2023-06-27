@@ -35,13 +35,22 @@ function initSocket() {
 		document.getElementById('chatter-name').innerText = chatter;
         break;
       case 'message':
-		let m = message.message;
-		if (m.length === 0)
-		{
-		  m = "No message";
+		const m = message.message;
+		const element = document.getElementById('chatter-message');
+		if (m.length === 0) {
+			element.innerText = "No message";
+		} else {
+			element.innerHTML = '';
+			const tokens = JSON.parse(message.tokenized_message);
+			tokens.forEach(token => {
+				if (token.type == 'string') {
+					element.innerHTML += token.content;
+				} else {
+					element.innerHTML += '<img src="' + token.content + '"/>';
+				}
+			});
+			document.getElementById('chatter-name').style.color = message.color;
 		}
-        document.getElementById('chatter-message').innerText = m;
-	document.getElementById('chatter-name').style.color = message.color;
         break;
     }
   }
