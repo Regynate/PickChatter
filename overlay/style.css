@@ -5,16 +5,16 @@ body {
   overflow: hidden;
   font: 900 8vmin Lato, Calibri, sans-serif;
   margin: 0;
-  text-shadow: 0 0 5px black,
-    0 0 5px black,
-    0 0 5px black,
-    0 0 5px black,
-    0 0 5px black,
-    0 0 5px black,
-    0 0 5px black,
-    0 0 5px black,
-    0 0 5px black,
-    0 0 5px black;
+  text-shadow: 0 0 1vmin black,
+    0 0 1vmin black,
+    0 0 1vmin black,
+    0 0 1vmin black,
+    0 0 1vmin black,
+    0 0 1vmin black,
+    0 0 1vmin black,
+    0 0 1vmin black,
+    0 0 1vmin black,
+    0 0 1vmin black;
   text-align: center;
   overflow-wrap: anywhere;
 }

@@ -83,7 +83,7 @@ namespace PickChatter
         {
             WebSocketServer.Instance.SendMessage("", "");
             WebSocketServer.Instance.SendChatter("");
-            WebSocketServer.Instance.SendRemainingTime("");
+            WebSocketServer.Instance.SendRemainingTime("0:00");
         }
     }
 }
