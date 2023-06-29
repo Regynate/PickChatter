@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:PickChatter"
         mc:Ignorable="d"
         DataContext="{Binding Source={x:Static local:SettingsManager.Instance}}"
-        Title="Settings" Height="540" Width="800" Closing="Window_Closing">
+        Title="Settings" Height="570" Width="800" Closing="Window_Closing">
     <Window.Resources>
         <local:EnumBooleanConverter x:Key="EnumBooleanConverter" />
     </Window.Resources>
