@@ -193,10 +193,16 @@ namespace PickChatter
 
         private void OnUserBanned(string username)
         {
+            if (username == currentChatter?.Username)
+            {
+                currentChatter = null;
+                NotifyChatterChanged();
+            }
+
             if (chatters.TryGetValue(username, out Chatter? chatter))
             {
-                processedMessagesCount -= chatter.MessageCount();
                 chatters.Remove(username);
+                processedMessagesCount -= chatter.MessageCount();
             }
         }
 

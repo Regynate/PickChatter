@@ -322,7 +322,10 @@ namespace PickChatter
 
             if (emotesLoaded)
             {
-                presentEmotes = presentEmotes.Concat(emotes).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+                foreach (var kvp in emotes)
+                {
+                    presentEmotes.TryAdd(kvp.Key, kvp.Value);
+                }
             }
 
             Regex regex = new Regex(string.Join('|', presentEmotes.Select(e => @"(?<=^|\s)(" + Regex.Escape(e.Key) + @")(?=$|\s)")));
