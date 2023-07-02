@@ -9,6 +9,8 @@ using System.ComponentModel;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
+using System.Security.Policy;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -55,7 +57,7 @@ namespace PickChatter
             }
         }
 
-        private void OpenTask(string filename, MMDevice device)
+        private async Task OpenTask(string filename, MMDevice device)
         {
             Exception? exception = null;
 
@@ -63,7 +65,11 @@ namespace PickChatter
             {
                 try
                 {
-                    waveSource = new MediaFoundationDecoder(filename)
+                    var client = new HttpClient();
+                    var stream = await client.GetByteArrayAsync(filename);
+                    client.Dispose();
+
+                    waveSource = new MediaFoundationDecoder(new MemoryStream(stream))
                                 .ToSampleSource()
                                 .ToMono()
                                 .ToWaveSource();
@@ -78,7 +84,7 @@ namespace PickChatter
                 catch (Exception ex)
                 {
                     exception = ex;
-                    Thread.Sleep(100);
+                    Thread.Sleep(300);
                 }
             }
 
@@ -88,7 +94,7 @@ namespace PickChatter
         public void Open(string filename, MMDevice device)
         {
             CleanupPlayback();
-            Task.Run(() => OpenTask(filename, device)).ContinueWith(t =>
+            Task.Run(async () => await OpenTask(filename, device)).ContinueWith(t =>
             {
                 if (t.IsFaulted)
                 {
