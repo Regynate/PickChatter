@@ -49,14 +49,14 @@ namespace PickChatter
             manager.Stop();
         }
 
-        private void onStateChanged(object? sender, EventArgs args)
+        private void OnStateChanged(object? sender, EventArgs args)
         {
             PropertyChanged?.Invoke(this, new(nameof(SpeakButtonText)));
         }
 
         private void UpdateManager()
         {
-            manager.StateChanged -= onStateChanged;
+            manager.StateChanged -= OnStateChanged;
 
             manager = Type switch
             {
@@ -65,7 +65,7 @@ namespace PickChatter
                 SpeechSynthesisType.MicrosoftSynthesis or _ => MicrosoftSpeechManager.Instance
             };
 
-            manager.StateChanged += onStateChanged;
+            manager.StateChanged += OnStateChanged;
         }    
 
         private SpeechManager()
