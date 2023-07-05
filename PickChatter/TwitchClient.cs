@@ -108,7 +108,7 @@ namespace PickChatter
                 }
             });
 
-            client.OnDisconnected += (_, args) => UpdateChannel(false); // try to reconnect immediately
+            client.AutoReListenOnException = true;
 
             HttpServer.Instance.PropertyChanged += (source, args) =>
             {
@@ -233,6 +233,22 @@ namespace PickChatter
             }
         }
 
+        private void TryConnect()
+        {
+            do
+            {
+                try
+                {
+                    client.Connect();
+                }
+                catch
+                {
+                    connectionAttempt++;
+                }
+            }
+            while (!client.IsConnected);
+        }
+
         public void Initialize(string username, string oauth, string? channel)
         {
 
@@ -253,18 +269,7 @@ namespace PickChatter
                 Task.Run(() => InitializeEmotes(channel));
             }
 
-            do
-            {
-                try
-                {
-                    client.Connect();
-                }
-                catch
-                {
-                    connectionAttempt++;
-                }
-            }
-            while (!client.IsConnected);
+            TryConnect();
         }
 
         public void Initialize(string username, string oauth)
