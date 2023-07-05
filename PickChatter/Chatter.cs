@@ -9,14 +9,16 @@ namespace PickChatter
     {
         private class Message
         {
-            public Message(string content, DateTime timestamp)
+            public Message(string content, DateTime timestamp, string id)
             {
                 PlainContent = content;
                 Timestamp = timestamp;
+                ID = id;
             }
 
             public string PlainContent { get; }
             public DateTime Timestamp { get; }
+            public string ID { get; }
         }
 
         public Chatter(string username, string displayname)
@@ -49,7 +51,7 @@ namespace PickChatter
 
         public void Update(ChatMessage message)
         {
-            messages.Add(new Message(message.Message, DateTime.Now));
+            messages.Add(new Message(message.Message, DateTime.Now, message.Id));
             DisplayName = message.DisplayName;
             color = message.ColorHex;
             IsSubscriber = message.IsSubscriber;
@@ -78,6 +80,19 @@ namespace PickChatter
                 return false;
             }
             return messages.FindLastIndex(messages.Count - 1, count, m => selector(m.PlainContent)) != -1;
+        }
+
+        public bool RemoveMessage(string id)
+        {
+            foreach (var message in messages.ToList())
+            {
+                if (message.ID == id)
+                {
+                    messages.Remove(message);
+                    return true;
+                }
+            }
+            return false;
         }
 
         public void Choose()

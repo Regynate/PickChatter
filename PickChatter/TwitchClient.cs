@@ -32,6 +32,7 @@ namespace PickChatter
         public event EventHandler<OnMessageReceivedArgs>? MessageReceived;
         public event EventHandler<OnUserTimedoutArgs>? UserTimedOut;
         public event EventHandler<OnUserBannedArgs>? UserBanned;
+        public event EventHandler<OnMessageClearedArgs>? MessageDeleted;
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -96,6 +97,7 @@ namespace PickChatter
             client.OnMessageReceived += (sender, args) => MessageReceived?.Invoke(this, args);
             client.OnUserBanned += (sender, args) => UserBanned?.Invoke(this, args);
             client.OnUserTimedout += (sender, args) => UserTimedOut?.Invoke(this, args);
+            client.OnMessageCleared += (sender, args) => MessageDeleted?.Invoke(this, args);
 
             client.WillReplaceEmotes = true;
 

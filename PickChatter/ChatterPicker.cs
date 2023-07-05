@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using TwitchLib.Client.Events;
 using System.Threading;
+using TwitchLib.PubSub.Events;
 
 namespace PickChatter
 {
@@ -104,6 +105,7 @@ namespace PickChatter
             TwitchClient.Instance.MessageReceived += OnMessageReceived;
             TwitchClient.Instance.UserBanned += (_, args) => OnUserBanned(args.UserBan.Username);
             TwitchClient.Instance.UserTimedOut += (_, args) => OnUserBanned(args.UserTimeout.Username);
+            TwitchClient.Instance.MessageDeleted += (_, args) => OnMessageDeleted(args.TargetMessageId);
             Task.Run(() =>
             {
                 while (true)
@@ -113,6 +115,18 @@ namespace PickChatter
                 }
             }
             );
+        }
+
+        private void OnMessageDeleted(string messageID)
+        {
+            foreach (var chatter in chatters.Values)
+            {
+                if (chatter.RemoveMessage(messageID))
+                {
+                    processedMessagesCount--;
+                    return;
+                }
+            }
         }
 
         private void OnUserBanned(string username)
