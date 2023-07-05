@@ -6,6 +6,7 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using TwitchLib.Client.Models;
 
 namespace PickChatter
 {
@@ -33,7 +34,7 @@ namespace PickChatter
             {
                 Invoke(() => WebSocketServer.Instance.SendChatter(args.Chatter));
             };
-
+            
             WebSocketServer.Instance.ConnectionOpen += (_, args) =>
             {
                 if (ChatterPicker.Instance.ChatterName != null)

@@ -16,7 +16,7 @@
             <TextBox x:Name="TwitchChannelTextBox" HorizontalAlignment="Left" Margin="10,0,0,0" TextWrapping="NoWrap" Text="{Binding TwitchChannel}" VerticalAlignment="Top" Width="120"/>
             <Button Content="Connect To Twitch" HorizontalAlignment="Left" Height="20" Margin="10,0,0,0" VerticalAlignment="Top" Width="120" Click="ConnectToTwitchButton_Click" x:Name="ConnectToTwitchButton"/>
         </StackPanel>
-        <StackPanel HorizontalAlignment="Left" Margin="40,70,0,0" VerticalAlignment="Top" Orientation="Horizontal">
+        <StackPanel HorizontalAlignment="Left" Margin="40,65,0,0" VerticalAlignment="Top" Orientation="Horizontal">
             <TextBlock Text="Capture mode:" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top"/>
             <ComboBox Width="350" Margin="10,-2,0,0" ItemsSource="{Binding Source={x:Static local:SettingsManager.ChatterModeTypeItems}}" SelectedIndex="{Binding ChatterMode}"  VerticalAlignment="Center"/>
         </StackPanel>
@@ -61,16 +61,17 @@
                 <TextBox HorizontalAlignment="Left" IsEnabled="{Binding ElementName=ExcludeBotsRule, Path=IsChecked}" Margin="5,0,0,0" VerticalAlignment="Center" TextWrapping="NoWrap" Width="150" Text="{Binding ExcludeUsersString}"/>
             </StackPanel>
             <CheckBox x:Name="ExcludeCommandMessagesRule" Content="Ignore command messages (starting with &quot;!&quot;)" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Center" IsChecked="{Binding ExcludeCommandsEnabled}"/>
+            <CheckBox x:Name="Rule5Checkbox" Content="Don't pick the same person more than once" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Center" IsChecked="{Binding Rule5Enabled}"/>
         </StackPanel>
-        <TextBlock Text="Auto-selecting" FontSize="18" HorizontalAlignment="Left" Margin="40,270,0,0" VerticalAlignment="Top" TextWrapping="Wrap"/>
-        <StackPanel HorizontalAlignment="Left" Margin="40,300,0,0" VerticalAlignment="Top" Orientation="Horizontal">
+        <TextBlock Text="Auto-selecting" FontSize="18" HorizontalAlignment="Left" Margin="40,295,0,0" VerticalAlignment="Top" TextWrapping="Wrap"/>
+        <StackPanel HorizontalAlignment="Left" Margin="40,325,0,0" VerticalAlignment="Top" Orientation="Horizontal">
             <CheckBox x:Name="AutoPickingCheckbox" Content="Pick a new chatter automatically once every " HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Center" IsChecked="{Binding AutoPickingEnabled}"/>
             <StackPanel HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Center" Orientation="Horizontal" IsEnabled="{Binding ElementName=AutoPickingCheckbox, Path=IsChecked}">
                 <TextBox Text="{Binding AutoPickingTime}" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Center" TextWrapping="NoWrap" MaxLength="3" Width="30" PreviewTextInput="NumberValidationTextBox"/>
                 <ComboBox Width="90" Margin="5,-1,0,0" ItemsSource="{Binding Source={x:Static local:SettingsManager.AutoPickingTimeTypeItems}}" SelectedIndex="{Binding AutoPickingTimeType}" VerticalAlignment="Center"/>
             </StackPanel>
         </StackPanel>
-        <StackPanel HorizontalAlignment="Left" Margin="40,335,0,0" VerticalAlignment="Top" Orientation="Vertical">
+        <StackPanel HorizontalAlignment="Left" Margin="40,355,0,0" VerticalAlignment="Top" Orientation="Vertical">
             <TextBlock Text="Speech synthesis" FontSize="18" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" TextWrapping="Wrap"/>
             <StackPanel HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Orientation="Vertical">
                 <CheckBox HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" Content="Enable speech synthesis" IsChecked="{Binding SpeechSynthesisEnabled}" x:Name="EnableSpeechSynthesisCheckbox"/>

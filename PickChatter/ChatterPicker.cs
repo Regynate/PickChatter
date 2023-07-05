@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using TwitchLib.Client.Events;
 using System.Threading;
-using TwitchLib.Client.Models;
 
 namespace PickChatter
 {
@@ -62,81 +61,6 @@ namespace PickChatter
 
         public event EventHandler<MessageChangedEventArgs>? MessageChanged;
         public event EventHandler<ChatterChangedEventArgs>? ChatterChanged;
-
-        private class Message
-        {
-            public Message(string content, DateTime timestamp)
-            {
-                PlainContent = content;
-                Timestamp = timestamp;
-            }
-
-            public string PlainContent { get; }
-            public DateTime Timestamp { get; }
-        }
-
-        private class Chatter
-        {
-            public Chatter(string username, string displayname)
-            {
-                Username = username;
-                DisplayName = displayname;
-            }
-
-            public Chatter(string username, ChatMessage message) : this(username, message.DisplayName)
-            {
-                Update(message);
-            }
-
-            private readonly List<Message> messages = new();
-
-            public string Username { get; }
-            public string DisplayName { get; private set; }
-            private string? color;
-            public string Color => color ?? "#ff7f50";
-            public bool IsSubscriber { get; private set; }
-            public int SubscriberTime { get; private set; }
-            public bool IsModerator { get; private set; }
-            public bool IsVIP { get; private set; }
-            public bool HasMessage => messages.Count > 0;
-            public DateTime Timestamp => HasMessage ? messages.Last().Timestamp : DateTime.MinValue;
-            public string LastMessage => HasMessage ? messages.Last().PlainContent : "";
-            private EmoteSet? emoteSet;
-            public string? TokenizedLastMessage => HasMessage ? TwitchClient.Instance.ConvertToEmoteJson(LastMessage, emoteSet!) : "";
-
-            public void Update(ChatMessage message)
-            {
-                messages.Add(new Message(message.Message, DateTime.Now));
-                DisplayName = message.DisplayName;
-                color = message.ColorHex;
-                IsSubscriber = message.IsSubscriber;
-                IsModerator = message.IsModerator;
-                IsVIP = message.IsVip;
-                SubscriberTime = message.SubscribedMonthCount;
-                emoteSet = message.EmoteSet;
-            }
-
-            public int MessageCount()
-            {
-                return messages.Count;
-            }
-
-            public int MessageCount(TimeSpan timeLimit)
-            {
-                var now = DateTime.Now;
-                return messages.Count - messages.FindLastIndex(m => now - m.Timestamp > timeLimit) - 1;
-            }
-
-            public bool ContainsMessage(TimeSpan timeLimit, Predicate<string> selector)
-            {
-                int count = MessageCount(timeLimit);
-                if (count == 0)
-                {
-                    return false;
-                }
-                return messages.FindLastIndex(messages.Count - 1, count, m => selector(m.PlainContent)) != -1;
-            }
-        }
 
         private int processedMessagesCount = 0;
 
@@ -206,7 +130,7 @@ namespace PickChatter
             }
         }
 
-        private bool Rule1(Chatter chatter)
+        private static bool Rule1(Chatter chatter)
         {
             if (!SettingsManager.Instance.Rule1Enabled)
             {
@@ -216,7 +140,7 @@ namespace PickChatter
                 chatter.MessageCount(TimeSpan.FromMinutes(SettingsManager.Instance.Rule1TimeLimit));
         }
 
-        private bool Rule2(Chatter chatter)
+        private static bool Rule2(Chatter chatter)
         {
             if (!SettingsManager.Instance.Rule2Enabled)
             {
@@ -250,8 +174,8 @@ namespace PickChatter
                         }
                     });
         }
-        
-        private bool Rule3(Chatter chatter)
+
+        private static bool Rule3(Chatter chatter)
         {
             if (!SettingsManager.Instance.Rule3Enabled)
             {
@@ -264,7 +188,7 @@ namespace PickChatter
                 SettingsManager.Instance.Rule3VIP && chatter.IsVIP;
         }
 
-        private bool Rule4(Chatter chatter)
+        private static bool Rule4(Chatter chatter)
         {
             return !SettingsManager.Instance.ExcludeUsersEnabled || 
                 !SettingsManager.Instance.ExcludeUsersString
@@ -273,9 +197,14 @@ namespace PickChatter
                 .Contains(chatter.Username);
         }
 
-        private bool SatisfiesRules(Chatter chatter)
+        private static bool Rule5(Chatter chatter)
         {
-            return chatter.HasMessage && Rule1(chatter) && Rule2(chatter) && Rule3(chatter) && Rule4(chatter);
+            return !SettingsManager.Instance.Rule5Enabled || !chatter.ChosenBefore;
+        }
+
+        private static bool SatisfiesRules(Chatter chatter)
+        {
+            return chatter.HasMessage && Rule1(chatter) && Rule2(chatter) && Rule3(chatter) && Rule4(chatter) && Rule5(chatter);
         }
 
         private Dictionary<string, Chatter> GetFilteredChatters()
@@ -283,7 +212,7 @@ namespace PickChatter
             return new(chatters.ToList().Where(c => SatisfiesRules(c.Value)));
         }
 
-        private void OnMessageReceived(object? sender, OnMessageReceivedArgs e)
+        public void OnMessageReceived(object? sender, OnMessageReceivedArgs e)
         {
             // TODO: don't like it very much
             if (SettingsManager.Instance.ExcludeCommandsEnabled && e.ChatMessage.Message.StartsWith('!'))
@@ -331,7 +260,7 @@ namespace PickChatter
 
         public void PickChatter(string? name)
         {
-            if (name == null)
+            if (string.IsNullOrEmpty(name))
             {
                 currentChatter = null;
                 NotifyChatterChanged();
@@ -349,6 +278,8 @@ namespace PickChatter
                 chatters.Add(username, new Chatter(username, name));
                 currentChatter = chatters[username];
             }
+
+            currentChatter.Choose();
 
             NotifyChatterChanged();
         }

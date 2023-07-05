@@ -208,6 +208,12 @@ namespace PickChatter
             set => SetProperty(nameof(Settings.Default.ChatterMode), value);
         }
 
+        public bool Rule5Enabled
+        {
+            get => GetProperty<bool>(nameof(Settings.Default.Rule5Enabled));
+            set => SetProperty(nameof(Settings.Default.Rule5Enabled), value);
+        }
+
         public bool HasModifiedProperties()
         {
             return propertiesChanged.Count > 0;

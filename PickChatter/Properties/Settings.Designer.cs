@@ -370,5 +370,17 @@ namespace PickChatter.Properties {
                 this["ChatterMode"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool Rule5Enabled {
+            get {
+                return ((bool)(this["Rule5Enabled"]));
+            }
+            set {
+                this["Rule5Enabled"] = value;
+            }
+        }
     }
 }
