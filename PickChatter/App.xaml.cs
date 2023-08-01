@@ -30,6 +30,11 @@ namespace PickChatter
                 Invoke(() => SpeechManager.Instance.Speak(args.Message));
             };
 
+            ChatterPicker.Instance.MessageDeleted += (_, args) =>
+            {
+                Invoke(() => SpeechManager.Instance.Stop());
+            };
+
             ChatterPicker.Instance.ChatterChanged += (_, args) =>
             {
                 Invoke(() => WebSocketServer.Instance.SendChatter(args.Chatter));

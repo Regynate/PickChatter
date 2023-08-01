@@ -60,8 +60,15 @@ namespace PickChatter
             NotifyMessageChanged();
         }
 
+        private void NotifyMessageDeleted()
+        {
+            NotifyMessageChanged();
+            MessageDeleted?.Invoke(this, EventArgs.Empty);
+        }
+
         public event EventHandler<MessageChangedEventArgs>? MessageChanged;
         public event EventHandler<ChatterChangedEventArgs>? ChatterChanged;
+        public event EventHandler<EventArgs>? MessageDeleted;
 
         private int processedMessagesCount = 0;
 
@@ -96,6 +103,7 @@ namespace PickChatter
             processedMessagesCount = 0;
             currentChatter = null;
             NotifyChatterChanged();
+            NotifyMessageDeleted();
         }
 
         private readonly Dictionary<string, Chatter> chatters = new();
@@ -124,9 +132,14 @@ namespace PickChatter
                 if (chatter.RemoveMessage(messageID))
                 {
                     processedMessagesCount--;
+                    if (chatter == currentChatter)
+                    {
+                        NotifyMessageDeleted();
+                    }
                     return;
                 }
             }
+
         }
 
         private void OnUserBanned(string username)
@@ -135,6 +148,7 @@ namespace PickChatter
             {
                 currentChatter = null;
                 NotifyChatterChanged();
+                NotifyMessageDeleted();
             }
 
             if (chatters.TryGetValue(username, out Chatter? chatter))
