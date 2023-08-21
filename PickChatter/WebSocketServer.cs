@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 
 namespace PickChatter
 {
@@ -22,6 +23,8 @@ namespace PickChatter
 
         public event EventHandler<ConnectionOpenEventArgs>? ConnectionOpen;
 
+        public event EventHandler<EventArgs>? AudioEnded;
+
         private readonly Fleck.WebSocketServer wss;
 
         private WebSocketServer()
@@ -32,6 +35,7 @@ namespace PickChatter
             {
                 connection.OnOpen += () => OnWsConnectionOpen(connection);
                 connection.OnClose += () => OnWSConnectionClose(connection);
+                connection.OnMessage += (message) => OnWSConnectionMessage(connection, message);
             });
         }
 
@@ -84,6 +88,35 @@ namespace PickChatter
             {
 
             }
+        }
+
+        private void OnWSConnectionMessage(IWebSocketConnection connection, string message)
+        {
+            if (message == "audioEnded")
+            {
+                AudioEnded?.Invoke(this, EventArgs.Empty);
+            }
+        }
+
+        public void StopAudio()
+        {
+            Broadcast(new { type = "audioStop" });
+        }
+        
+        public void StopAudio(IWebSocketConnection connection)
+        {
+            SendConnectionMessage(connection, new { type = "audioStop" });
+        }
+
+        public bool SendAudioUrl(string url)
+        {
+            Broadcast(new { type = "audioUrl", url });
+            return connections.Count > 0;
+        }
+        
+        public void SendAudioUrl(IWebSocketConnection connection, string url)
+        {
+            SendConnectionMessage(connection, new { type = "audioUrl", url });
         }
 
         public void SendMessage(string message, string color, string tokenized_message)

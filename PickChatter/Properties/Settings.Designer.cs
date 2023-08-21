@@ -382,5 +382,29 @@ namespace PickChatter.Properties {
                 this["Rule5Enabled"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool PlayAudioInBrowser {
+            get {
+                return ((bool)(this["PlayAudioInBrowser"]));
+            }
+            set {
+                this["PlayAudioInBrowser"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool PlayAudioInApp {
+            get {
+                return ((bool)(this["PlayAudioInApp"]));
+            }
+            set {
+                this["PlayAudioInApp"] = value;
+            }
+        }
     }
 }

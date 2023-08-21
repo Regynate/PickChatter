@@ -70,6 +70,8 @@ namespace PickChatter
         public event EventHandler<ChatterChangedEventArgs>? ChatterChanged;
         public event EventHandler<EventArgs>? MessageDeleted;
 
+        private Dictionary<string, Chatter> filteredChatters = new();
+
         private int processedMessagesCount = 0;
 
         private Chatter? currentChatter = null;
@@ -95,11 +97,12 @@ namespace PickChatter
         public string? LastMessage => currentChatter?.LastMessage;
         public string? TokenizedLastMessage => currentChatter?.TokenizedLastMessage;
 
-        public string StatusBarString => $"Messages: {processedMessagesCount}, Users: {chatters.Count}, Filtered: {GetFilteredChatters().Count}";
+        public string StatusBarString => $"Messages: {processedMessagesCount}, Users: {chatters.Count}, Filtered: {filteredChatters.Count}";
 
         public void ClearChatters()
         {
             chatters.Clear();
+            filteredChatters.Clear();
             processedMessagesCount = 0;
             currentChatter = null;
             NotifyChatterChanged();
@@ -118,6 +121,7 @@ namespace PickChatter
             {
                 while (true)
                 {
+                    UpdateFilteredChatters();
                     NotifyPropertyChanged(nameof(StatusBarString));
                     Thread.Sleep(1000);
                 }
@@ -240,6 +244,23 @@ namespace PickChatter
             return new(chatters.ToList().Where(c => SatisfiesRules(c.Value)));
         }
 
+        private void UpdateFilteredChatters()
+        {
+            filteredChatters = GetFilteredChatters();
+        }
+
+        private void UpdateFilteredChatters(Chatter chatter)
+        {
+            if (!filteredChatters.ContainsKey(chatter.Username) && SatisfiesRules(chatter))
+            {
+                filteredChatters.Add(chatter.Username, chatter);
+            }
+            else
+            {
+                filteredChatters.Remove(chatter.Username);
+            }
+        }
+
         public void OnMessageReceived(object? sender, OnMessageReceivedArgs e)
         {
             // TODO: don't like it very much
@@ -250,14 +271,19 @@ namespace PickChatter
 
             string username = e.ChatMessage.Username;
 
+            Chatter chatter;
             if (chatters.ContainsKey(username))
             {
-                chatters[username].Update(e.ChatMessage);
+                chatter = chatters[username];
+                chatter.Update(e.ChatMessage);
             }
             else 
             {
-                chatters.Add(username, new Chatter(username, e.ChatMessage));
+                chatter = new Chatter(username, e.ChatMessage);
+                chatters.Add(username, chatter);
             }
+
+            UpdateFilteredChatters(chatters[username]);
 
             if (username == currentChatter?.Username && SettingsManager.Instance.ChatterMode == (int)SettingsManager.ChatterModeType.Chatter)
             { 
@@ -265,6 +291,7 @@ namespace PickChatter
             }
 
             processedMessagesCount++;
+            NotifyPropertyChanged(nameof(StatusBarString));
         }
 
         public bool PickRandomChatter()

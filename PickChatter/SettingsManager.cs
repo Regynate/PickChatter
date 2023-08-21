@@ -214,6 +214,18 @@ namespace PickChatter
             set => SetProperty(nameof(Settings.Default.Rule5Enabled), value);
         }
 
+        public bool PlayAudioInBrowser
+        {
+            get => GetProperty<bool>(nameof(Settings.Default.PlayAudioInBrowser));
+            set => SetProperty(nameof(Settings.Default.PlayAudioInBrowser), value);
+        }
+
+        public bool PlayAudioInApp
+        {
+            get => GetProperty<bool>(nameof(Settings.Default.PlayAudioInApp));
+            set => SetProperty(nameof(Settings.Default.PlayAudioInApp), value);
+        }
+
         public bool HasModifiedProperties()
         {
             return propertiesChanged.Count > 0;

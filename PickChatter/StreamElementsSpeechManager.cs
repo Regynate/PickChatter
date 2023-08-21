@@ -5,7 +5,10 @@ namespace PickChatter
 {
     internal abstract class StreamElementsSpeechManager : ISpeechManager
     {
-        public bool SpeechSpeaking { get; private set; }
+        private bool appSpeaking = false;
+        private bool browserSpeaking = false;
+
+        public bool SpeechSpeaking => appSpeaking || browserSpeaking;
 
         public abstract List<string> AvailableVoices { get; }
 
@@ -19,33 +22,52 @@ namespace PickChatter
 
         private readonly MediaPlayer player = new();
 
+        private string GetAudioUrl(string message)
+        {
+            return $"https://api.streamelements.com/kappa/v2/speech?voice={VoiceID}&text={Uri.EscapeDataString(message)}";
+        }
+
         private void SpeakImpl(string message)
         {
-            SpeechSpeaking = true;
-            StateChanged?.Invoke(this, new());
+            appSpeaking = true;
 
-            string url = $"https://api.streamelements.com/kappa/v2/speech?voice={VoiceID}&text={Uri.EscapeDataString(message)}";
-            player.Open(url);
+            player.Open(GetAudioUrl(message));
         }
 
         public void Speak(string message)
         {
-            if (!SpeechSpeaking)
+            if (SettingsManager.Instance.PlayAudioInApp)
             {
-                SpeakImpl(message);
+                if (!SpeechSpeaking)
+                {
+                    SpeakImpl(message);
+                }
+                else
+                {
+                    messages.Enqueue(message);
+                }
             }
-            else
+            if (SettingsManager.Instance.PlayAudioInBrowser)
             {
-                messages.Enqueue(message);
+                browserSpeaking = WebSocketServer.Instance.SendAudioUrl(GetAudioUrl(message));
             }
+            StateChanged?.Invoke(this, EventArgs.Empty);
         }
 
         public void Stop()
         {
-            SpeechSpeaking = false;
+            if (SettingsManager.Instance.PlayAudioInApp)
+            {
+                appSpeaking = false;
+                messages.Clear();
+                player.Stop();
+            }
+            if (SettingsManager.Instance.PlayAudioInBrowser)
+            {
+                browserSpeaking = false;
+                WebSocketServer.Instance.StopAudio();
+            }
             StateChanged?.Invoke(this, EventArgs.Empty);
-            messages.Clear();
-            player.Stop();
         }
 
         protected StreamElementsSpeechManager()
@@ -56,7 +78,7 @@ namespace PickChatter
             {
                 if (messages.Count == 0)
                 {
-                    SpeechSpeaking = false;
+                    appSpeaking = false;
                     StateChanged?.Invoke(this, EventArgs.Empty);
                 }
                 else
@@ -67,7 +89,13 @@ namespace PickChatter
 
             player.MediaFailed += (_, args) =>
             {
-                SpeechSpeaking = false;
+                appSpeaking = false;
+                StateChanged?.Invoke(this, EventArgs.Empty);
+            };
+
+            WebSocketServer.Instance.AudioEnded += (_, args) =>
+            {
+                browserSpeaking = false;
                 StateChanged?.Invoke(this, EventArgs.Empty);
             };
         }

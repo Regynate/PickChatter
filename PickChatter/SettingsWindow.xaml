@@ -73,27 +73,33 @@
         </StackPanel>
         <StackPanel HorizontalAlignment="Left" Margin="40,335,0,0" VerticalAlignment="Top" Orientation="Vertical">
             <TextBlock Text="Speech synthesis" FontSize="18" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" TextWrapping="Wrap"/>
-            <StackPanel HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Orientation="Vertical">
-                <CheckBox HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" Content="Enable speech synthesis" IsChecked="{Binding SpeechSynthesisEnabled}" x:Name="EnableSpeechSynthesisCheckbox"/>
-                <StackPanel HorizontalAlignment="Left" Margin="0,12,0,0" VerticalAlignment="Top" Orientation="Vertical" IsEnabled="{Binding ElementName=EnableSpeechSynthesisCheckbox, Path=IsChecked}">
-                    <StackPanel HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" Orientation="Horizontal">
-                        <RadioButton x:Name="VoiceType1" GroupName="VoiceType" Content="Microsoft voice" IsChecked="{Binding SpeechSynthesisType, Converter={StaticResource EnumBooleanConverter}, ConverterParameter=0}"/>
-                        <StackPanel HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" Orientation="Horizontal" IsEnabled="{Binding ElementName=VoiceType1, Path=IsChecked}">
-                            <ComboBox Width="250" Margin="0,0,0,0"  ItemsSource="{Binding Source={x:Static local:MicrosoftSpeechManager.Instance}, Path=AvailableVoices}" SelectedItem="{Binding MicrosoftVoice}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+            <StackPanel HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" Orientation="Horizontal">
+                <StackPanel HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Orientation="Vertical">
+                    <CheckBox HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" Content="Enable speech synthesis" IsChecked="{Binding SpeechSynthesisEnabled}" x:Name="EnableSpeechSynthesisCheckbox"/>
+                    <StackPanel HorizontalAlignment="Left" Margin="0,12,0,0" VerticalAlignment="Top" Orientation="Vertical" IsEnabled="{Binding ElementName=EnableSpeechSynthesisCheckbox, Path=IsChecked}">
+                        <StackPanel HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" Orientation="Horizontal">
+                            <RadioButton x:Name="VoiceType1" GroupName="VoiceType" Content="Microsoft voice" IsChecked="{Binding SpeechSynthesisType, Converter={StaticResource EnumBooleanConverter}, ConverterParameter=0}"/>
+                            <StackPanel HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" Orientation="Horizontal" IsEnabled="{Binding ElementName=VoiceType1, Path=IsChecked}">
+                                <ComboBox Width="250" Margin="0,0,0,0"  ItemsSource="{Binding Source={x:Static local:MicrosoftSpeechManager.Instance}, Path=AvailableVoices}" SelectedItem="{Binding MicrosoftVoice}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                            </StackPanel>
+                        </StackPanel>
+                        <StackPanel HorizontalAlignment="Left" Margin="0,5,0,0" VerticalAlignment="Top" Orientation="Horizontal">
+                            <RadioButton x:Name="VoiceType2" GroupName="VoiceType" Content="Amazon voice" IsChecked="{Binding SpeechSynthesisType, Converter={StaticResource EnumBooleanConverter}, ConverterParameter=1}"/>
+                            <StackPanel HorizontalAlignment="Left" Margin="17,0,0,0" VerticalAlignment="Top" Orientation="Horizontal" IsEnabled="{Binding ElementName=VoiceType2, Path=IsChecked}">
+                                <ComboBox Width="250" Margin="0,0,0,0"  ItemsSource="{Binding Source={x:Static local:AmazonSpeechManager.Instance}, Path=AvailableVoices}" SelectedItem="{Binding AmazonVoice}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                            </StackPanel>
+                        </StackPanel>
+                        <StackPanel HorizontalAlignment="Left" Margin="0,5,0,0" VerticalAlignment="Top" Orientation="Horizontal">
+                            <RadioButton x:Name="VoiceType3" GroupName="VoiceType" Content="Google voice" IsChecked="{Binding SpeechSynthesisType, Converter={StaticResource EnumBooleanConverter}, ConverterParameter=2}"/>
+                            <StackPanel HorizontalAlignment="Left" Margin="22,0,0,0" VerticalAlignment="Top" Orientation="Horizontal" IsEnabled="{Binding ElementName=VoiceType3, Path=IsChecked}">
+                                <ComboBox Width="250" Margin="0,0,0,0"  ItemsSource="{Binding Source={x:Static local:GoogleSpeechManager.Instance}, Path=AvailableVoices}" SelectedItem="{Binding GoogleVoice}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                            </StackPanel>
                         </StackPanel>
                     </StackPanel>
-                    <StackPanel HorizontalAlignment="Left" Margin="0,5,0,0" VerticalAlignment="Top" Orientation="Horizontal">
-                        <RadioButton x:Name="VoiceType2" GroupName="VoiceType" Content="Amazon voice" IsChecked="{Binding SpeechSynthesisType, Converter={StaticResource EnumBooleanConverter}, ConverterParameter=1}"/>
-                        <StackPanel HorizontalAlignment="Left" Margin="17,0,0,0" VerticalAlignment="Top" Orientation="Horizontal" IsEnabled="{Binding ElementName=VoiceType2, Path=IsChecked}">
-                            <ComboBox Width="250" Margin="0,0,0,0"  ItemsSource="{Binding Source={x:Static local:AmazonSpeechManager.Instance}, Path=AvailableVoices}" SelectedItem="{Binding AmazonVoice}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                        </StackPanel>
-                    </StackPanel>
-                    <StackPanel HorizontalAlignment="Left" Margin="0,5,0,0" VerticalAlignment="Top" Orientation="Horizontal">
-                        <RadioButton x:Name="VoiceType3" GroupName="VoiceType" Content="Google voice" IsChecked="{Binding SpeechSynthesisType, Converter={StaticResource EnumBooleanConverter}, ConverterParameter=2}"/>
-                        <StackPanel HorizontalAlignment="Left" Margin="22,0,0,0" VerticalAlignment="Top" Orientation="Horizontal" IsEnabled="{Binding ElementName=VoiceType3, Path=IsChecked}">
-                            <ComboBox Width="250" Margin="0,0,0,0"  ItemsSource="{Binding Source={x:Static local:GoogleSpeechManager.Instance}, Path=AvailableVoices}" SelectedItem="{Binding GoogleVoice}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                        </StackPanel>
-                    </StackPanel>
+                </StackPanel>
+                <StackPanel HorizontalAlignment="Left" Margin="40,10,0,0" VerticalAlignment="Top" Orientation="Vertical" IsEnabled="{Binding ElementName=EnableSpeechSynthesisCheckbox, Path=IsChecked}">
+                    <CheckBox HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" Content="Play audio in app" IsChecked="{Binding PlayAudioInApp}" x:Name="PlayAudioInAppCheckbox"/>
+                    <CheckBox HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Content="Play audio in browser source (Amazon &amp; Google voice only)" IsChecked="{Binding PlayAudioInBrowser}" x:Name="PlayAudioInBrowserCheckbox"/>
                 </StackPanel>
             </StackPanel>
             <Button Content="Test" HorizontalAlignment="Left" Height="20" Margin="0,15,0,0" VerticalAlignment="Top" Width="60" Click="TestVoiceButton_Click"/>
