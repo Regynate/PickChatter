@@ -16,6 +16,7 @@ using System.Windows.Threading;
 using TwitchLib.Api.Core.Enums;
 using TwitchLib.Api.Core.Exceptions;
 using TwitchLib.Client.Events;
+using TwitchLib.Client.Exceptions;
 using TwitchLib.Client.Models;
 using TwitchLib.Communication.Events;
 
@@ -23,7 +24,7 @@ namespace PickChatter
 {
     internal class TwitchClient : INotifyPropertyChanged
     {
-        private static TwitchClient instance = new();
+        private static readonly TwitchClient instance = new();
         public static TwitchClient Instance { get => instance; }
 
         private readonly TwitchLib.Client.TwitchClient client;
@@ -376,7 +377,10 @@ namespace PickChatter
 
         private void OnConnected(object? sender, OnConnectedArgs e)
         {
-            //MessageBox.Show("Connected");
+            if (client.JoinedChannels.Count == 0)
+            {
+                UpdateChannel();
+            }
         }
 
         private void OnError(object? sender, OnErrorEventArgs e)
@@ -386,7 +390,11 @@ namespace PickChatter
 
         private void OnIncorrectLogin(object? sender, OnIncorrectLoginArgs e)
         {
-            App.ShowMessage("Incorrect login: " + e.Exception);
+            if (App.ShowMessage("The login token is incorrect or expired. Try to reconnect now?", "Error", 
+                MessageBoxButton.YesNo, MessageBoxImage.None, MessageBoxResult.No) == MessageBoxResult.Yes)
+            {
+                StartBrowserAuth();
+            }
         }
 
         private void OnJoinedChannel(object? sender, OnJoinedChannelArgs e)

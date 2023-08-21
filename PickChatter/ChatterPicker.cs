@@ -119,7 +119,7 @@ namespace PickChatter
                 while (true)
                 {
                     NotifyPropertyChanged(nameof(StatusBarString));
-                    Thread.Sleep(200);
+                    Thread.Sleep(1000);
                 }
             }
             );
