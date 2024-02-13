@@ -3,7 +3,7 @@ A tool to pick a Twitch chatter and say everything they type out loud
 Inspired by DougDoug
 
 # Installation
-1. Grab the [latest release](https://github.com/Regynate/PickChatter/releases/latest/download/PickChatter.exe) and extract the contents somewhere. 
+1. Grab the [latest release](https://github.com/Regynate/PickChatter/releases/latest/download/PickChatter.zip) and extract the contents somewhere. 
 2. Launch `PickChatter\PickChatter.exe`
 3. Go to the Settings page, click `Connect To Twitch` and follow the prompts
 
