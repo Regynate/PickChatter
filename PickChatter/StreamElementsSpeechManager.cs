@@ -24,7 +24,7 @@ namespace PickChatter
 
         private string GetAudioUrl(string message)
         {
-            return $"https://api.streamelements.com/kappa/v2/speech?voice={VoiceID}&text={Uri.EscapeDataString(message)}";
+            return $"https://regynate.com/tts/polly?voice={VoiceID}&text={Uri.EscapeDataString(message)}";
         }
 
         private void SpeakImpl(string message)
