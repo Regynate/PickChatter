@@ -24,40 +24,8 @@ namespace PickChatter
                 Settings.Default.Save();
             }
             TwitchClient.Instance.TryInitialize();
-            ChatterPicker.Instance.MessageChanged += (_, args) =>
-            {
-                Invoke(() => WebSocketServer.Instance.SendMessage(args.Message, args.Color, args.TokenizedMessage));
-                Invoke(() => SpeechManager.Instance.Speak(args.Message));
-            };
 
-            ChatterPicker.Instance.MessageDeleted += (_, args) =>
-            {
-                Invoke(() => SpeechManager.Instance.Stop());
-            };
-
-            ChatterPicker.Instance.ChatterChanged += (_, args) =>
-            {
-                Invoke(() => WebSocketServer.Instance.SendChatter(args.Chatter));
-            };
-            
-            WebSocketServer.Instance.ConnectionOpen += (_, args) =>
-            {
-                if (ChatterPicker.Instance.ChatterName != null)
-                {
-                    Invoke(() => WebSocketServer.Instance.SendChatter(args.Connection, ChatterPicker.Instance.ChatterName));
-                    Invoke(() => WebSocketServer.Instance.SendMessage(args.Connection, ChatterPicker.Instance.LastMessage ?? "", "", ChatterPicker.Instance.TokenizedLastMessage ?? ""));
-                }
-                else
-                {
-                    Invoke(() => WebSocketServer.Instance.SendChatter(args.Connection, ""));
-                    Invoke(() => WebSocketServer.Instance.SendMessage(args.Connection, "", "", ""));
-                }
-            };
-
-            AutoPicker.Instance.RemainingTimeChanged += (_, _) =>
-            {
-                Invoke(() => WebSocketServer.Instance.SendRemainingTime(AutoPicker.Instance.RemainingTimeString));
-            };
+            ChatterPickerList.Instance.SetPickerCount(Math.Max(SettingsManager.Instance.ChattersSettings.Count, 1));
         }
 
         private static void Invoke(Action action)
@@ -87,9 +55,7 @@ namespace PickChatter
 
         private void Application_Exit(object sender, ExitEventArgs e)
         {
-            WebSocketServer.Instance.SendMessage("", "", "");
-            WebSocketServer.Instance.SendChatter("");
-            WebSocketServer.Instance.SendRemainingTime("0:00");
+            ChatterPickerList.Instance.Clear();
         }
     }
 }

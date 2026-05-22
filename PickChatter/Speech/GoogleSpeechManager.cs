@@ -43,11 +43,9 @@ namespace PickChatter
 
         public override List<string> AvailableVoices => voices.Keys.ToList();
 
-        public override string CurrentVoice => SettingsManager.Instance.GoogleVoice;
-
         protected override string VoiceID => voices[CurrentVoice];
 
-        private GoogleSpeechManager() { }
+        public GoogleSpeechManager() { }
 
         private static GoogleSpeechManager instance = new();
         public static GoogleSpeechManager Instance => instance;

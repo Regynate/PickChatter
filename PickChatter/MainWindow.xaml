@@ -5,41 +5,26 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PickChatter"
         mc:Ignorable="d"
-        Title="PickChatter" Height="450" Width="800" MinWidth="600" MinHeight="400">
-    <Window.Resources>
-        <BooleanToVisibilityConverter x:Key="BoolToVisConverter" />
-    </Window.Resources>
+        Title="PickChatter" Height="503" Width="738" MinWidth="800" MinHeight="500">
     <Grid>
-        <TextBlock Text="{Binding Source={x:Static local:ChatterPicker.Instance}, Path=ChatterName, Mode=OneWay, StringFormat='Selected chatter: \{0\}', TargetNullValue='Selected chatter: -'}" FontSize="20" HorizontalAlignment="Left" Height="60" Margin="40,40,0,0" VerticalAlignment="Top" Width="360" FontFamily="./#Cascadia Mono" TextWrapping="WrapWithOverflow"/>
-        <Button x:Name="PickRandomChatterButton" Content="Pick random chatter" Margin="40,217,0,0" Height="48" Width="360" FontSize="18" VerticalAlignment="Top" HorizontalAlignment="Left" Click="PickRandomChatterButton_Click" />
-        <Button x:Name="SelectSpecificChatterButton" Content="Select" HorizontalAlignment="Left" Margin="300,166,0,0" VerticalAlignment="Top" Height="30" Width="100" FontSize="16" Click="SelectSpecificChatterButton_Click"/>
-        <StackPanel HorizontalAlignment="Left" Margin="40,297,0,0" VerticalAlignment="Top" Orientation="Horizontal" Visibility="{Binding Source={x:Static local:SettingsManager.Instance}, Path=AutoPickingEnabled, Converter={StaticResource BoolToVisConverter}}">
-            <Button x:Name="AutoPickButton" Content="{Binding Source={x:Static local:AutoPicker.Instance}, Path=StartButtonText}" Margin="0,0,0,0" Height="36" Width="180" FontSize="14" VerticalAlignment="Top" HorizontalAlignment="Left" Click="AutoPickButton_Click" />
-            <TextBlock Margin="20,0,0,0" VerticalAlignment="Center" FontSize="18" Text="{Binding Source={x:Static local:AutoPicker.Instance}, Path=RemainingTimeString, Mode=OneWay, TargetNullValue='0:00'}" />
-        </StackPanel>
-        <TextBox HorizontalAlignment="Left" Padding="10,3,0,0" Height="30" Margin="40,166,0,0" x:Name="PickSpecificTextBox" VerticalAlignment="Top" Width="255" FontSize="16" MaxLines="1"/>
-        <TextBlock IsHitTestVisible="False" Text="Pick specific chatter" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="53,170,0,0" Foreground="DarkGray" FontSize="16">
-            <TextBlock.Style>
-                <Style TargetType="{x:Type TextBlock}">
-                    <Setter Property="Visibility" Value="Collapsed"/>
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding Text, ElementName=PickSpecificTextBox}" Value="">
-                            <Setter Property="Visibility" Value="Visible"/>
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </TextBlock.Style>
-        </TextBlock>
-        <TextBlock Height="201" Margin="423,40,40,0" TextWrapping="Wrap" Text="{Binding Source={x:Static local:ChatterPicker.Instance}, Path=LastMessage, Mode=OneWay, TargetNullValue=''}" VerticalAlignment="Top"/>
-        <StatusBar x:Name="MyStatusBar" Margin="0,0,0,0" Height="20" VerticalAlignment="Bottom">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="92*"/>
+            <RowDefinition Height="125*"/>
+        </Grid.RowDefinitions>
+        <TabControl x:Name="ChattersTabContainer" Margin="10,10,10,79" Grid.RowSpan="2">
+            <TabItem Header="Chatter 1">
+
+            </TabItem>
+        </TabControl>
+        <StatusBar x:Name="MyStatusBar" Grid.Row="1" Height="20" VerticalAlignment="Bottom">
             <StatusBarItem>
-                <TextBlock Text="{Binding Source={x:Static local:ChatterPicker.Instance}, Path=StatusBarString, Mode=OneWay, TargetNullValue=''}" />
+                <TextBlock Text="{Binding CurrentPicker.StatusBarString, Mode=OneWay, TargetNullValue=''}" />
             </StatusBarItem>
             <StatusBarItem Margin="20,0">
-                <TextBlock Text="{Binding Source={x:Static local:TwitchClient.Instance}, Path=StatusBarString, Mode=OneWay, TargetNullValue=''}" />
+                <TextBlock Text="{Binding StatusBarString, Mode=OneWay, Source={x:Static local:TwitchClient.Instance}, TargetNullValue=''}" />
             </StatusBarItem>
         </StatusBar>
-        <Button Content="Settings" Margin="0,0,10,25" FontSize="16" Height="30" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="100" Click="SettingsButton_Click" />
-        <Button Content="{Binding Source={x:Static local:SpeechManager.Instance}, Path=SpeakButtonText}" IsEnabled="{Binding Source={x:Static local:SettingsManager.Instance}, Path=SpeechSynthesisEnabled}" Margin="0,250,40,0" FontSize="16" Height="30" VerticalAlignment="Top" HorizontalAlignment="Right" Width="100" Click="SpeakButton_Click"/>
+        <Button Content="Settings" Margin="0,0,10,25" FontSize="14" Height="30" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="100" Click="SettingsButton_Click" Grid.Row="1" />
+        <Button Content="Remove chatter" Margin="10,0,0,25" FontSize="14" Height="30" VerticalAlignment="Bottom" Click="RemoveChatterButton_Click" Grid.Row="1" HorizontalAlignment="Left" Width="120" />
     </Grid>
 </Window>

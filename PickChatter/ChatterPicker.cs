@@ -11,11 +11,8 @@ using TwitchLib.PubSub.Events;
 
 namespace PickChatter
 {
-    internal sealed class ChatterPicker : INotifyPropertyChanged
+    public sealed class ChatterPicker : INotifyPropertyChanged
     {
-        private static readonly ChatterPicker instance = new();
-        public static ChatterPicker Instance { get => instance; }
-
         public class MessageChangedEventArgs : EventArgs
         {
             public string Message { get; }
@@ -99,6 +96,36 @@ namespace PickChatter
 
         public string StatusBarString => $"Messages: {processedMessagesCount}, Users: {chatters.Count}, Filtered: {filteredChatters.Count}";
 
+        private SpeechManager _speechManager;
+        public SpeechManager SpeechManager => _speechManager;
+
+        private VoiceSettings _voiceSettings = new();
+        public VoiceSettings VoiceSettings
+        {
+            get => _voiceSettings;
+            set
+            {
+                _voiceSettings = value;
+                UpdateSpeechSettings();
+            }
+        }
+
+        public void UpdateSpeechSettings()
+        {
+            _speechManager.SetSettings(_voiceSettings);
+        }
+
+        private string _id;
+        public string ID
+        {
+            get => _id;
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged(nameof(ID));
+            }
+        }
+
         public void ClearChatters()
         {
             chatters.Clear();
@@ -111,8 +138,10 @@ namespace PickChatter
 
         private readonly Dictionary<string, Chatter> chatters = new();
 
-        private ChatterPicker()
+        internal ChatterPicker(string id = "")
         {
+            _id = id;
+            _speechManager = new SpeechManager();
             TwitchClient.Instance.MessageReceived += OnMessageReceived;
             TwitchClient.Instance.UserBanned += (_, args) => OnUserBanned(args.UserBan.Username);
             TwitchClient.Instance.UserTimedOut += (_, args) => OnUserBanned(args.UserTimeout.Username);
@@ -168,7 +197,7 @@ namespace PickChatter
             {
                 return true;
             }
-            return SettingsManager.Instance.Rule1MessageCount <= 
+            return SettingsManager.Instance.Rule1MessageCount <=
                 chatter.MessageCount(TimeSpan.FromMinutes(SettingsManager.Instance.Rule1TimeLimit));
         }
 
@@ -215,14 +244,14 @@ namespace PickChatter
             }
 
             return SettingsManager.Instance.Rule3Moderator && chatter.IsModerator ||
-                SettingsManager.Instance.Rule3Subscriber && chatter.IsSubscriber && 
+                SettingsManager.Instance.Rule3Subscriber && chatter.IsSubscriber &&
                     chatter.SubscriberTime >= SettingsManager.Instance.Rule3SubscriberTime ||
                 SettingsManager.Instance.Rule3VIP && chatter.IsVIP;
         }
 
         private static bool Rule4(Chatter chatter)
         {
-            return !SettingsManager.Instance.ExcludeUsersEnabled || 
+            return !SettingsManager.Instance.ExcludeUsersEnabled ||
                 !SettingsManager.Instance.ExcludeUsersString
                 .ToLower()
                 .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
@@ -277,7 +306,7 @@ namespace PickChatter
                 chatter = chatters[username];
                 chatter.Update(e.ChatMessage);
             }
-            else 
+            else
             {
                 chatter = new Chatter(username, e.ChatMessage);
                 chatters.Add(username, chatter);
@@ -285,8 +314,8 @@ namespace PickChatter
 
             UpdateFilteredChatters(chatters[username]);
 
-            if (username == currentChatter?.Username && SettingsManager.Instance.ChatterMode == (int)SettingsManager.ChatterModeType.Chatter)
-            { 
+            if (username == currentChatter?.Username && SettingsManager.Instance.ChatterMode == (int) SettingsManager.ChatterModeType.Chatter)
+            {
                 NotifyMessageChanged();
             }
 

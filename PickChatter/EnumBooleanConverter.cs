@@ -12,7 +12,7 @@ namespace PickChatter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return value.Equals(int.Parse(parameter.ToString() ?? "-1"));
+            return value?.ToString()?.Equals(parameter.ToString()) ?? false;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

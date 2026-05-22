@@ -14,7 +14,7 @@ namespace PickChatter
 
         protected abstract string VoiceID { get; }
 
-        public abstract string CurrentVoice { get; }
+        public string CurrentVoice { get; set; }
 
         public event EventHandler<EventArgs>? StateChanged;
 
@@ -34,7 +34,7 @@ namespace PickChatter
             player.Open(GetAudioUrl(message));
         }
 
-        public void Speak(string message)
+        public void Speak(string id, string message)
         {
             if (SettingsManager.Instance.PlayAudioInApp)
             {
@@ -49,12 +49,12 @@ namespace PickChatter
             }
             if (SettingsManager.Instance.PlayAudioInBrowser)
             {
-                browserSpeaking = WebSocketServer.Instance.SendAudioUrl(GetAudioUrl(message));
+                browserSpeaking = WebSocketServer.Instance.SendAudioUrl(id, GetAudioUrl(message));
             }
             StateChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        public void Stop()
+        public void Stop(string id)
         {
             if (SettingsManager.Instance.PlayAudioInApp)
             {
@@ -65,12 +65,12 @@ namespace PickChatter
             if (SettingsManager.Instance.PlayAudioInBrowser)
             {
                 browserSpeaking = false;
-                WebSocketServer.Instance.StopAudio();
+                WebSocketServer.Instance.StopAudio(id);
             }
             StateChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        protected StreamElementsSpeechManager()
+        public StreamElementsSpeechManager()
         {
             player.MediaOpened += (_, _) => player.Play();
 

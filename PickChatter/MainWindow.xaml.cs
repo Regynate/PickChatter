@@ -22,33 +22,43 @@ namespace PickChatter
     /// </summary>
     public partial class MainWindow : Window
     {
-        private void SayLastMessage()
+        private class PickerTab
         {
-            var message = ChatterPicker.Instance.LastMessage;
-            if (!string.IsNullOrWhiteSpace(message))
+            public ChatterPicker picker;
+            public TabItem tab;
+            public int index;
+
+            public PickerTab(ChatterPicker picker, TabItem tab, int index)
             {
-                Dispatcher.Invoke(() => SpeechManager.Instance.Speak(message));
+                this.picker = picker;
+                this.tab = tab;
+                this.index = index;
             }
         }
+
+        private readonly List<PickerTab> _pickerList;
+        private int CurrentTabIndex => ChattersTabContainer.SelectedIndex;
+
+        public ChatterPicker? CurrentPicker => CurrentTabIndex < _pickerList.Count ? _pickerList[CurrentTabIndex].picker : null;
 
         public MainWindow()
         {
             InitializeComponent();
-        }
+            _pickerList = new();
+            UpdatePickerList();
 
-        private void SelectSpecificChatterButton_Click(object sender, RoutedEventArgs e)
-        {
-            string chatter = PickSpecificTextBox.Text;
-            ChatterPicker.Instance.PickChatter(chatter);
-        }
-
-        private void PickRandomChatterButton_Click(object sender, RoutedEventArgs e)
-        {
-            Dispatcher.Invoke(() => SpeechManager.Instance.Stop());
-            if (!ChatterPicker.Instance.PickRandomChatter())
+            _tabAddNewTab = new TabItem()
             {
-                App.ShowMessage("There are no chatters to select from");
-            }
+                Header = "+",
+                Content = null,
+                IsEnabled = true
+            };
+
+            ChattersTabContainer.SelectionChanged += ChattersTab_SelectionChanged;
+
+            UpdateTabs();
+
+            DataContext = this;
         }
 
         private void SettingsButton_Click(object sender, RoutedEventArgs e)
@@ -59,31 +69,95 @@ namespace PickChatter
                 ShowInTaskbar = false
             };
 
-            window.Show();
+            window.ShowDialog();
         }
 
-        private void SpeakButton_Click(object sender, RoutedEventArgs e)
+        private TabItem _tabAddNewTab;
+
+        private void AddPicker()
         {
-            if (SpeechManager.Instance.SpeechSpeaking)
+            ChatterPickerList.Instance.AddChatterPicker();
+            UpdatePickerList();
+            UpdateTabs();
+            ChattersTabContainer.SelectedIndex = _pickerList.Count - 1;
+        }
+
+        private void ChattersTab_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (e.AddedItems.Contains(_tabAddNewTab))
             {
-                SpeechManager.Instance.Stop();
-            }
-            else
-            {
-                SayLastMessage();
+                AddPicker();
             }
         }
 
-        private void AutoPickButton_Click(object sender, RoutedEventArgs e)
+        private void UpdatePickerList()
         {
-            if (AutoPicker.Instance.Running)
+            _pickerList.Clear();
+            for (int i = 0; i < ChatterPickerList.Instance.ChatterPickers.Count; ++i)
             {
-                AutoPicker.Instance.Stop();
-                ChatterPicker.Instance.PickChatter(null);
+                var settings = SettingsManager.Instance.GetChatterSettings(i);
+                ChatterPickerList.Instance.ChatterPickers[i].ID = settings.ID;
+                ChatterPickerList.Instance.ChatterPickers[i].VoiceSettings = settings.VoiceSettings;
             }
-            else
+        }
+
+        private void UpdateTabs()
+        {
+            ChattersTabContainer.Items.Clear();
+
+            int i = 1;
+            foreach (var picker in ChatterPickerList.Instance.ChatterPickers)
             {
-                AutoPicker.Instance.Start();
+                var page = new ChatterPage(picker);
+                var tab = new TabItem()
+                {
+                    Header = string.IsNullOrEmpty(picker.ID) ? $"Chatter {i}" : picker.ID,
+                    Content = new Frame()
+                    {
+                        Content = page,
+                        NavigationUIVisibility = NavigationUIVisibility.Hidden
+                    }
+                };
+                ChattersTabContainer.Items.Add(tab);
+
+                _pickerList.Add(new PickerTab(picker, tab, i));
+
+                picker.PropertyChanged += (sender, args) =>
+                {
+                    if (args.PropertyName == nameof(ChatterPicker.ID))
+                    {
+                        var p = _pickerList.FirstOrDefault(x => x.picker == picker);
+
+                        if (p != null)
+                        {
+                            p.tab.Header = string.IsNullOrEmpty(p.picker.ID) ? $"Chatter {p.index}" : p.picker.ID;
+                            SettingsManager.Instance.SetChatterID(p.index - 1, p.picker.ID);
+                        }
+                    }
+                };
+
+                ++i;
+            }
+
+            ChattersTabContainer.Items.Add(_tabAddNewTab);
+        }
+
+        private void RemoveChatterButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (CurrentPicker != null)
+            {
+                int index = CurrentTabIndex;
+
+                ChatterPickerList.Instance.RemovePicker(CurrentPicker);
+                SettingsManager.Instance.RemoveChatter(index);
+                UpdatePickerList();
+                UpdateTabs();
+                ChattersTabContainer.SelectedIndex = index < _pickerList.Count ? index : _pickerList.Count - 1;
+            }
+
+            if (_pickerList.Count == 0)
+            {
+                AddPicker();
             }
         }
     }

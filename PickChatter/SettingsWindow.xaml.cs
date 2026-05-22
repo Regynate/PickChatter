@@ -42,7 +42,7 @@ namespace PickChatter
             if (SettingsManager.Instance.PropertyModified(nameof(SettingsManager.Instance.TwitchChannel)))
             {
                 TwitchClient.Instance.UpdateChannel();
-                ChatterPicker.Instance.ClearChatters();
+                ChatterPickerList.Instance.ClearChatters();
             }
         }
 
@@ -89,7 +89,7 @@ namespace PickChatter
 
         private void TestVoiceButton_Click(object sender, RoutedEventArgs e)
         {
-            SpeechManager.Instance.Speak("Hello, my name is " + SpeechManager.Instance.CurrentVoice);
+            //SpeechManager.Instance.Speak("", "Hello, my name is " + SpeechManager.Instance.CurrentVoice);
         }
     }
 }

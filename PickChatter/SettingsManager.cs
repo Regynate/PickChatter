@@ -1,12 +1,11 @@
 ﻿using PickChatter.Properties;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
-using System.Net.Http.Headers;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
+using System.Text.Json;
 
 namespace PickChatter
 {
@@ -123,7 +122,7 @@ namespace PickChatter
             get => GetProperty<string>(nameof(Settings.Default.AmazonVoice));
             set => SetProperty(nameof(Settings.Default.AmazonVoice), value);
         }
-        
+
         public string GoogleVoice
         {
             get => GetProperty<string>(nameof(Settings.Default.GoogleVoice));
@@ -201,7 +200,7 @@ namespace PickChatter
             get => GetProperty<bool>(nameof(Settings.Default.ExcludeCommandsEnabled));
             set => SetProperty(nameof(Settings.Default.ExcludeCommandsEnabled), value);
         }
-        
+
         public int ChatterMode
         {
             get => GetProperty<int>(nameof(Settings.Default.ChatterMode));
@@ -224,6 +223,83 @@ namespace PickChatter
         {
             get => GetProperty<bool>(nameof(Settings.Default.PlayAudioInApp));
             set => SetProperty(nameof(Settings.Default.PlayAudioInApp), value);
+        }
+
+        public List<ChatterSettings> ChattersSettings
+        {
+            get
+            {
+                try
+                {
+                    return JsonSerializer.Deserialize<List<ChatterSettings>>(GetProperty<string>(nameof(Settings.Default.ChattersSettings))!)!;
+                }
+                catch
+                {
+                    return [];
+                }
+            }
+            set
+            {
+                SetProperty(nameof(Settings.Default.ChattersSettings), JsonSerializer.Serialize(value));
+            }
+        }
+
+        public void SetChatterID(int index, string id)
+        {
+            var chatters = ChattersSettings;
+            while (chatters.Count <= index)
+            {
+                chatters.Add(new());
+            }
+
+            chatters[index].ID = id;
+            ChattersSettings = chatters;
+
+            Save();
+        }
+
+        public void SetChatterVoiceSettings(string id, VoiceSettings voiceSettings)
+        {
+            var chatters = ChattersSettings;
+            foreach (var chatter in chatters)
+            {
+                if (chatter.ID == id)
+                {
+                    chatter.VoiceSettings = voiceSettings;
+                }
+            }
+            ChattersSettings = chatters;
+            Save();
+        }
+
+        public ChatterSettings GetChatterSettings(int index)
+        {
+            var chatters = ChattersSettings;
+            if (index < chatters.Count)
+            {
+                return chatters[index];
+            }
+            else
+            {
+                return new();
+            }
+        }
+
+        public string GetChatterID(int index)
+        {
+            return GetChatterSettings(index).ID;
+        }
+
+        public void RemoveChatter(int index)
+        {
+            var chatters = ChattersSettings;
+            if (index >= 0 && index < chatters.Count)
+            {
+                chatters.RemoveAt(index);
+            }
+            ChattersSettings = chatters;
+
+            Save();
         }
 
         public bool HasModifiedProperties()
@@ -262,13 +338,13 @@ namespace PickChatter
 
         private SettingsManager()
         {
-            
+
         }
 
         private T GetProperty<T>(string propertyName)
         {
             object obj = Settings.Default;
-            return (T)obj.GetType().GetProperty(propertyName)!.GetValue(obj)!;
+            return (T) obj.GetType().GetProperty(propertyName)!.GetValue(obj)!;
         }
 
         private void SetProperty(string propertyName, object value)

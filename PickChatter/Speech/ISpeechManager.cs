@@ -14,11 +14,11 @@ namespace PickChatter
 
         public List<string> AvailableVoices { get; }
 
-        public string CurrentVoice { get; }
+        public string CurrentVoice { get; set; }
 
-        public void Speak(string message);
+        public void Speak(string id, string message);
 
-        public void Stop();
+        public void Stop(string id);
 
         public event EventHandler<EventArgs>? StateChanged;
     }

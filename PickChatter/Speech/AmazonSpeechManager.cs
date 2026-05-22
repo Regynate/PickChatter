@@ -30,11 +30,9 @@ namespace PickChatter
             "Ivy"
         };
 
-        public override string CurrentVoice => SettingsManager.Instance.AmazonVoice;
-
         protected override string VoiceID => CurrentVoice;
 
-        private AmazonSpeechManager() { }
+        public AmazonSpeechManager() { }
 
         private static AmazonSpeechManager instance = new();
         public static AmazonSpeechManager Instance => instance;

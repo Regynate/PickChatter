@@ -8,36 +8,38 @@ using System.Timers;
 
 namespace PickChatter
 {
-    internal class AutoPicker : INotifyPropertyChanged
+    public class AutoPicker : INotifyPropertyChanged
     {
-        private Timer timer;
-        private Timer notifyTimer;
+        private ChatterPicker _picker;
+
+        private readonly Timer _timer;
+        private readonly Timer _notifyTimer;
         
         public event PropertyChangedEventHandler? PropertyChanged;
 
         public event EventHandler<EventArgs>? RemainingTimeChanged;
 
-        private DateTime endTime;
+        private DateTime _endTime;
 
-        public bool Running => timer.Enabled;
+        public bool Running => _timer.Enabled;
 
-        public string RemainingTimeString => Running ? TimeToString(endTime - DateTime.Now) : TimeToString(TimeSpan.Zero);
+        public string RemainingTimeString => Running ? TimeToString(_endTime - DateTime.Now) : TimeToString(TimeSpan.Zero);
 
         public string StartButtonText => Running ? "Stop auto-picking" : "Start auto-picking";
 
         public void Start()
         {
-            ChatterPicker.Instance.PickRandomChatter();
-            timer.Start();
-            notifyTimer.Start();
-            endTime = DateTime.Now.AddSeconds(GetTimeSeconds());
+            _picker.PickRandomChatter();
+            _timer.Start();
+            _notifyTimer.Start();
+            _endTime = DateTime.Now.AddSeconds(GetTimeSeconds());
             NotifyPropertyChanged(nameof(StartButtonText));
         }
 
         public void Stop()
         {
-            timer.Stop();
-            notifyTimer.Stop();
+            _timer.Stop();
+            _notifyTimer.Stop();
             NotifyPropertyChanged(nameof(StartButtonText));
             NotifyRemainingTimeChanged();
         }
@@ -64,16 +66,17 @@ namespace PickChatter
             }
         }
 
-        private AutoPicker()
+        internal AutoPicker(ChatterPicker picker)
         {
-            timer = new Timer();
-            timer.Enabled = false;
-            timer.AutoReset = true;
-            timer.Interval = GetTime();
-            timer.Elapsed += (_, _) =>
+            _picker = picker;
+            _timer = new Timer();
+            _timer.Enabled = false;
+            _timer.AutoReset = true;
+            _timer.Interval = GetTime();
+            _timer.Elapsed += (_, _) =>
             {
-                ChatterPicker.Instance.PickRandomChatter();
-                endTime = DateTime.Now.AddSeconds(GetTimeSeconds());
+                _picker.PickRandomChatter();
+                _endTime = DateTime.Now.AddSeconds(GetTimeSeconds());
             };
             SettingsManager.Instance.PropertySaved += (_, args) =>
             {
@@ -83,12 +86,12 @@ namespace PickChatter
                     if (Running)
                     {
                         Stop();
-                        timer.Interval = GetTime();
+                        _timer.Interval = GetTime();
                         Start();
                     }
                     else
                     {
-                        timer.Interval = GetTime();
+                        _timer.Interval = GetTime();
                     }
                 }
 
@@ -99,14 +102,14 @@ namespace PickChatter
                 }
             };
 
-            notifyTimer = new Timer()
+            _notifyTimer = new Timer()
             {
                 AutoReset = true,
                 Enabled = false,
                 Interval = 100
             };
 
-            notifyTimer.Elapsed += (_, _) =>
+            _notifyTimer.Elapsed += (_, _) =>
             {
                 NotifyRemainingTimeChanged();
             };
@@ -117,9 +120,6 @@ namespace PickChatter
             RemainingTimeChanged?.Invoke(this, EventArgs.Empty);
             NotifyPropertyChanged(nameof(RemainingTimeString));
         }
-
-        private static AutoPicker instance = new();
-        public static AutoPicker Instance => instance;
 
         private void NotifyPropertyChanged(string name)
         {

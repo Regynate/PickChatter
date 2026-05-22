@@ -98,56 +98,56 @@ namespace PickChatter
             }
         }
 
-        public void StopAudio()
+        public void StopAudio(string id)
         {
-            Broadcast(new { type = "audioStop" });
+            Broadcast(new { type = "audioStop", id });
         }
         
-        public void StopAudio(IWebSocketConnection connection)
+        public void StopAudio(IWebSocketConnection connection, string id)
         {
-            SendConnectionMessage(connection, new { type = "audioStop" });
+            SendConnectionMessage(connection, new { type = "audioStop", id });
         }
 
-        public bool SendAudioUrl(string url)
+        public bool SendAudioUrl(string id, string url)
         {
-            Broadcast(new { type = "audioUrl", url });
+            Broadcast(new { type = "audioUrl", id, url });
             return connections.Count > 0;
         }
         
-        public void SendAudioUrl(IWebSocketConnection connection, string url)
+        public void SendAudioUrl(IWebSocketConnection connection, string id, string url)
         {
-            SendConnectionMessage(connection, new { type = "audioUrl", url });
+            SendConnectionMessage(connection, new { type = "audioUrl", id, url });
         }
 
-        public void SendMessage(string message, string color, string tokenized_message)
+        public void SendMessage(string id, string message, string color, string tokenized_message)
         {
-            Broadcast(new { type = "message", message, color, tokenized_message });
+            Broadcast(new { type = "message", id, message, color, tokenized_message });
         }
 
-        public void SendMessage(IWebSocketConnection connection, string message, string color, string tokenized_message)
+        public void SendMessage(IWebSocketConnection connection, string id, string message, string color, string tokenized_message)
         {
             SendConnectionMessage(connection, 
                 new { type = "message", message, color, tokenized_message });
         }
 
-        public void SendChatter(string chatter)
+        public void SendChatter(string id, string chatter)
         {
-            Broadcast(new { type = "chatter", chatter });
+            Broadcast(new { type = "chatter", id, chatter });
         }
 
-        public void SendChatter(IWebSocketConnection connection, string chatter)
+        public void SendChatter(IWebSocketConnection connection, string id, string chatter)
         {
-            SendConnectionMessage(connection, new { type = "chatter", chatter });
+            SendConnectionMessage(connection, new { type = "chatter", id, chatter });
         }
 
-        internal void SendRemainingTime(string time)
+        internal void SendRemainingTime(string id, string time)
         {
-            Broadcast(new { type = "remaining-time", time });
+            Broadcast(new { type = "remaining-time", id, time });
         }
 
-        internal void SendRemainingTime(IWebSocketConnection connection, string time)
+        internal void SendRemainingTime(IWebSocketConnection connection, string id, string time)
         {
-            SendConnectionMessage(connection, new { type = "remaining-time", time });
+            SendConnectionMessage(connection, new { type = "remaining-time", id, time });
         }
 
         private static readonly WebSocketServer instance = new WebSocketServer();
