@@ -10,6 +10,9 @@ async function getAvatar() {
   return files[Math.floor(Math.random() * files.length)];;
 }
 
+const urlParams = new URLSearchParams(window.location.search);
+const id = urlParams.get('id');
+
 const audios = [];
 
 function initSocket() {
@@ -20,6 +23,11 @@ function initSocket() {
   socket.onopen = () => { console.log('connected to socket') }
   socket.onmessage = event => {
     const message = JSON.parse(event.data);
+
+    if (id && message.id !== id) {
+      return;
+    }
+
     switch (message.type) {
       case 'chatter':
         let chatter = message.chatter;
