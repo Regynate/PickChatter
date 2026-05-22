@@ -23,12 +23,12 @@
                     <ComboBox Width="250" Margin="0,0,0,0"  ItemsSource="{Binding Source={x:Static local:AmazonSpeechManager.Instance}, Path=AvailableVoices}" SelectedItem="{Binding AmazonVoice}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                 </StackPanel>
             </StackPanel>
-            <StackPanel HorizontalAlignment="Left" Margin="0,5,0,0" VerticalAlignment="Top" Orientation="Horizontal">
+            <!--<StackPanel HorizontalAlignment="Left" Margin="0,5,0,0" VerticalAlignment="Top" Orientation="Horizontal">
                 <RadioButton x:Name="VoiceType3" GroupName="VoiceType" Content="Google voice" IsChecked="{Binding SpeechSynthesisType, Converter={StaticResource EnumBooleanConverter}, ConverterParameter=GoogleSynthesis}"/>
                 <StackPanel HorizontalAlignment="Left" Margin="22,0,0,0" VerticalAlignment="Top" Orientation="Horizontal" IsEnabled="{Binding ElementName=VoiceType3, Path=IsChecked}">
                     <ComboBox Width="250" Margin="0,0,0,0"  ItemsSource="{Binding Source={x:Static local:GoogleSpeechManager.Instance}, Path=AvailableVoices}" SelectedItem="{Binding GoogleVoice}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                 </StackPanel>
-            </StackPanel>
+            </StackPanel>-->
         </StackPanel>
         <Button Content="Test" HorizontalAlignment="Left" Margin="20,0,0,10" Width="76" Click="TestVoiceButton_Click" Height="23" VerticalAlignment="Bottom"/>
         <Button Content="Save" Margin="0,0,21,12" Height="23" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="76" Click="SaveButton_Click"/>
