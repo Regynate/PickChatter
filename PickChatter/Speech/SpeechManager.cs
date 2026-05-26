@@ -20,6 +20,7 @@ namespace PickChatter
         {
             MicrosoftSynthesis,
             AmazonSynthesis,
+            ElevenlabsSynthesis,
             GoogleSynthesis
         }
 
@@ -64,6 +65,7 @@ namespace PickChatter
             CurrentVoice = Type switch
             {
                 SpeechSynthesisType.AmazonSynthesis => settings.AmazonVoice,
+                SpeechSynthesisType.ElevenlabsSynthesis => settings.ElevenlabsVoice,
                 SpeechSynthesisType.GoogleSynthesis => settings.GoogleVoice,
                 SpeechSynthesisType.MicrosoftSynthesis or _ => settings.MicrosoftVoice
             };
@@ -94,6 +96,7 @@ namespace PickChatter
             manager = Type switch
             {
                 SpeechSynthesisType.AmazonSynthesis => new AmazonSpeechManager(),
+                SpeechSynthesisType.ElevenlabsSynthesis => new ElevenlabsSpeechManager(),
                 SpeechSynthesisType.GoogleSynthesis => new GoogleSpeechManager(),
                 SpeechSynthesisType.MicrosoftSynthesis or _ => new MicrosoftSpeechManager()
             };

@@ -24,7 +24,7 @@ function initSocket() {
   socket.onmessage = event => {
     const message = JSON.parse(event.data);
 
-    if (id && message.id !== id) {
+    if (id && message.id && message.id !== id) {
       return;
     }
 

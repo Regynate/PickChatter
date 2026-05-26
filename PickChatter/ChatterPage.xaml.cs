@@ -96,7 +96,7 @@ namespace PickChatter
 
         private void VoiceSettingsButton_Click(object sender, RoutedEventArgs e)
         {
-            VoiceSettingsWindow window = new(_picker.SpeechManager, _picker.VoiceSettings)
+            VoiceSettingsWindow window = new(_picker.SpeechManager, _picker.VoiceSettings, _picker.ID)
             {
                 Owner = Window.GetWindow(this),
                 ShowInTaskbar = false

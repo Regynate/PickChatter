@@ -83,6 +83,10 @@
                     <CheckBox HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Content="Play audio in browser source (Amazon &amp; Google voice only)" IsChecked="{Binding PlayAudioInBrowser}" x:Name="PlayAudioInBrowserCheckbox"/>
                 </StackPanel>
             </StackPanel>
+            <StackPanel HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Orientation="Horizontal">
+                <Label Content="ElevenLabs API key:  " HorizontalAlignment="Left" Margin="0,1,0,0" VerticalAlignment="Center"/>
+                <TextBox Margin="5,0,0,0" VerticalAlignment="Center" TextWrapping="NoWrap" Width="230" Text="{Binding ElevenLabsAPIKey}" FontFamily="/Assets/#password"/>
+            </StackPanel>
         </StackPanel>
     </Grid>
 </Window>

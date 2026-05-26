@@ -21,12 +21,14 @@ namespace PickChatter
     {
         private SpeechManager _manager;
         private VoiceSettings _settings;
+        private string _id;
 
-        public VoiceSettingsWindow(SpeechManager manager, VoiceSettings settings)
+        public VoiceSettingsWindow(SpeechManager manager, VoiceSettings settings, string id)
         {
             InitializeComponent();
             _manager = manager;
             _settings = settings;
+            _id = id;
 
             DataContext = _settings;
         }
@@ -40,7 +42,7 @@ namespace PickChatter
         {
             _manager.SetSettings(_settings);
 
-            _manager.Speak("Test", "Hello, my name is " + _manager.CurrentVoice);
+            _manager.Speak("", "Hello, my name is " + _manager.CurrentVoice);
         }
     }
 }

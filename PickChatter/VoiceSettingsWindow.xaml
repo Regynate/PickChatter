@@ -19,8 +19,14 @@
             </StackPanel>
             <StackPanel HorizontalAlignment="Left" Margin="0,5,0,0" VerticalAlignment="Top" Orientation="Horizontal">
                 <RadioButton x:Name="VoiceType2" GroupName="VoiceType" Content="Amazon voice" IsChecked="{Binding SpeechSynthesisType, Converter={StaticResource EnumBooleanConverter}, ConverterParameter=AmazonSynthesis}"/>
-                <StackPanel HorizontalAlignment="Left" Margin="17,0,0,0" VerticalAlignment="Top" Orientation="Horizontal" IsEnabled="{Binding ElementName=VoiceType2, Path=IsChecked}">
+                <StackPanel HorizontalAlignment="Left" Margin="16,0,0,0" VerticalAlignment="Top" Orientation="Horizontal" IsEnabled="{Binding ElementName=VoiceType2, Path=IsChecked}">
                     <ComboBox Width="250" Margin="0,0,0,0"  ItemsSource="{Binding Source={x:Static local:AmazonSpeechManager.Instance}, Path=AvailableVoices}" SelectedItem="{Binding AmazonVoice}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                </StackPanel>
+            </StackPanel>
+            <StackPanel HorizontalAlignment="Left" Margin="0,5,0,0" VerticalAlignment="Top" Orientation="Horizontal">
+                <RadioButton x:Name="VoiceType3" GroupName="VoiceType" Content="Elevenlabs voice" IsChecked="{Binding SpeechSynthesisType, Converter={StaticResource EnumBooleanConverter}, ConverterParameter=ElevenlabsSynthesis}"/>
+                <StackPanel HorizontalAlignment="Left" Margin="4,0,0,0" VerticalAlignment="Top" Orientation="Horizontal" IsEnabled="{Binding ElementName=VoiceType3, Path=IsChecked}">
+                    <ComboBox Width="250" Margin="0,0,0,0"  ItemsSource="{Binding Source={x:Static local:ElevenlabsSpeechManager.Instance}, Path=AvailableVoices}" SelectedItem="{Binding ElevenlabsVoice}" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                 </StackPanel>
             </StackPanel>
             <!--<StackPanel HorizontalAlignment="Left" Margin="0,5,0,0" VerticalAlignment="Top" Orientation="Horizontal">

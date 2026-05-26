@@ -418,5 +418,17 @@ namespace PickChatter.Properties {
                 this["ChattersSettings"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string ElevenLabsAPIKey {
+            get {
+                return ((string)(this["ElevenLabsAPIKey"]));
+            }
+            set {
+                this["ElevenLabsAPIKey"] = value;
+            }
+        }
     }
 }

@@ -10,11 +10,13 @@ namespace PickChatter
 {
     public class VoiceSettings : INotifyPropertyChanged
     {
-        public string MicrosoftVoice { get; set; } = MicrosoftSpeechManager.Instance.AvailableVoices[0];
+        public string MicrosoftVoice { get; set; } = MicrosoftSpeechManager.Instance.AvailableVoices.FirstOrDefault("");
 
-        public string AmazonVoice { get; set; } = AmazonSpeechManager.Instance.AvailableVoices[0];
+        public string AmazonVoice { get; set; } = AmazonSpeechManager.Instance.AvailableVoices.FirstOrDefault("");
+        
+        public string ElevenlabsVoice { get; set; } = ElevenlabsSpeechManager.Instance.AvailableVoices.FirstOrDefault("");
 
-        public string GoogleVoice { get; set; } = GoogleSpeechManager.Instance.AvailableVoices[0];
+        public string GoogleVoice { get; set; } = GoogleSpeechManager.Instance.AvailableVoices.FirstOrDefault("");
 
         public SpeechManager.SpeechSynthesisType SpeechSynthesisType { get; set; } = 0;
 

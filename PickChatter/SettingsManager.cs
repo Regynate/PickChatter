@@ -225,6 +225,12 @@ namespace PickChatter
             set => SetProperty(nameof(Settings.Default.PlayAudioInApp), value);
         }
 
+        public string ElevenLabsAPIKey
+        {
+            get => GetProperty<string>(nameof(Settings.Default.ElevenLabsAPIKey));
+            set => SetProperty(nameof(Settings.Default.ElevenLabsAPIKey), value);
+        }
+
         public List<ChatterSettings> ChattersSettings
         {
             get

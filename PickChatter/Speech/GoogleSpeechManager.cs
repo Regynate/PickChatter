@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PickChatter
 {
-    internal class GoogleSpeechManager : StreamElementsSpeechManager
+    internal class GoogleSpeechManager : ServerSpeechManager
     {
         private readonly Dictionary<string, string> voices = new()
         {
@@ -49,5 +49,10 @@ namespace PickChatter
 
         private static GoogleSpeechManager instance = new();
         public static GoogleSpeechManager Instance => instance;
+
+        protected override string GetAudioUrl(string message)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

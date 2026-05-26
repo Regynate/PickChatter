@@ -19,7 +19,7 @@ namespace PickChatter
         public string TwitchURL { get => url + "oauth/redirect"; }
         private bool running = false;
 
-        public string? Token { get; private set;  }
+        public string? Token { get; private set; }
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -62,7 +62,7 @@ namespace PickChatter
                     data = File.ReadAllBytes(".\\redirect.html");
                 }
                 else if (req?.QueryString.Get("state") == stateString)
-                { 
+                {
                     if (req?.Url?.AbsolutePath == "/error")
                     {
                         data = File.ReadAllBytes(".\\error.html");
@@ -72,6 +72,13 @@ namespace PickChatter
                         data = File.ReadAllBytes(".\\success.html");
                         Token = req.QueryString.Get("access_token");
                         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Token)));
+                    }
+                }
+                else if (req?.Url?.AbsolutePath == "/11labs")
+                {
+                    if (ElevenLabsAPI.GetAudio(req.QueryString.Get("message") ?? "", req.QueryString.Get("voice") ?? "", out data))
+                    {
+                        res.ContentType = "audio/mp3";
                     }
                 }
 

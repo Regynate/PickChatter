@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace PickChatter
 {
-    internal abstract class StreamElementsSpeechManager : ISpeechManager
+    internal abstract class ServerSpeechManager : ISpeechManager
     {
         private bool appSpeaking = false;
         private bool browserSpeaking = false;
@@ -22,10 +22,7 @@ namespace PickChatter
 
         private readonly MediaPlayer player = new();
 
-        private string GetAudioUrl(string message)
-        {
-            return $"https://regynate.com/tts/polly?voice={VoiceID}&text={Uri.EscapeDataString(message)}";
-        }
+        protected abstract string GetAudioUrl(string message);
 
         private void SpeakImpl(string message)
         {
@@ -70,7 +67,7 @@ namespace PickChatter
             StateChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        public StreamElementsSpeechManager()
+        public ServerSpeechManager()
         {
             player.MediaOpened += (_, _) => player.Play();
 

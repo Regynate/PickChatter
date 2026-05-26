@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PickChatter
 {
-    internal sealed class AmazonSpeechManager : StreamElementsSpeechManager
+    internal sealed class AmazonSpeechManager : ServerSpeechManager
     {
         public override List<string> AvailableVoices => [
             "Isabelle", "Danielle", "Gregory", "Burcu", "Jitka", "Sabrina", "Joanna", "Ruth", "Lupe", "Jasmine", "Jihye", "Kevin", "Filiz", "Elin", "Astrid",
@@ -24,5 +24,10 @@ namespace PickChatter
 
         private static AmazonSpeechManager instance = new();
         public static AmazonSpeechManager Instance => instance;
+
+        protected override string GetAudioUrl(string message)
+        {
+            return $"https://regynate.com/tts/polly?voice={VoiceID}&text={Uri.EscapeDataString(message)}";
+        }
     }
 }
