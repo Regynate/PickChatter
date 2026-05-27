@@ -96,7 +96,7 @@ namespace PickChatter
             for (int i = 0; i < ChatterPickerList.Instance.ChatterPickers.Count; ++i)
             {
                 var settings = SettingsManager.Instance.GetChatterSettings(i);
-                ChatterPickerList.Instance.ChatterPickers[i].ID = settings.ID;
+                ChatterPickerList.Instance.ChatterPickers[i].ID = string.IsNullOrEmpty(settings.ID) ? $"Chatter_{i+1}" : settings.ID;
                 ChatterPickerList.Instance.ChatterPickers[i].VoiceSettings = settings.VoiceSettings;
             }
         }
