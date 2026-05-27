@@ -101,6 +101,13 @@ namespace PickChatter
             }
         }
 
+        private void UpdateID(PickerTab p)
+        {
+            p.tab.Header = (string.IsNullOrEmpty(p.picker.ID) ? $"Chatter {p.index}" : p.picker.ID)
+                + (string.IsNullOrEmpty(p.picker.ChatterName) ? "" : $" - {p.picker.ChatterName}");
+            SettingsManager.Instance.SetChatterID(p.index - 1, p.picker.ID);
+        }
+
         private void UpdateTabs()
         {
             ChattersTabContainer.Items.Clear();
@@ -130,9 +137,14 @@ namespace PickChatter
 
                         if (p != null)
                         {
-                            p.tab.Header = string.IsNullOrEmpty(p.picker.ID) ? $"Chatter {p.index}" : p.picker.ID;
-                            SettingsManager.Instance.SetChatterID(p.index - 1, p.picker.ID);
+                            UpdateID(p);
                         }
+                    }
+
+                    if (args.PropertyName == nameof(ChatterPicker.ChatterName))
+                    {
+                        var p = _pickerList.FirstOrDefault(x => x.picker == picker);
+                        UpdateID(p);
                     }
                 };
 
