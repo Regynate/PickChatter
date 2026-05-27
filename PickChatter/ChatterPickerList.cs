@@ -68,9 +68,7 @@ namespace PickChatter
 
         internal void RemovePicker(ChatterPicker picker)
         {
-            WebSocketServer.Instance.SendMessage(picker.ID, "", "", "");
-            WebSocketServer.Instance.SendChatter(picker.ID, "");
-            WebSocketServer.Instance.SendRemainingTime(picker.ID, "0:00");
+            picker.PickChatter(null);
             pickers.Remove(picker);
         }
 
