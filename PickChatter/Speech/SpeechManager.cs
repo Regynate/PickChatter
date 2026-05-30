@@ -62,13 +62,7 @@ namespace PickChatter
         public void SetSettings(VoiceSettings settings)
         {
             Type = settings.SpeechSynthesisType;
-            CurrentVoice = Type switch
-            {
-                SpeechSynthesisType.AmazonSynthesis => settings.AmazonVoice,
-                SpeechSynthesisType.ElevenlabsSynthesis => settings.ElevenlabsVoice,
-                SpeechSynthesisType.GoogleSynthesis => settings.GoogleVoice,
-                SpeechSynthesisType.MicrosoftSynthesis or _ => settings.MicrosoftVoice
-            };
+            CurrentVoice = settings.VoiceName;
         }
 
         public void Speak(string id, string message)
