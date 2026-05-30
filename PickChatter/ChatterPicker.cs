@@ -1,12 +1,14 @@
-﻿using System;
+﻿using PickChatter.Properties;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using TwitchLib.Client.Events;
-using System.Threading;
 using TwitchLib.PubSub.Events;
 
 namespace PickChatter
@@ -115,16 +117,35 @@ namespace PickChatter
             _speechManager.SetSettings(_voiceSettings);
         }
 
+        private int _index;
+        public int Index
+        {
+            get => _index;
+            set
+            {
+                _index = value;
+                NotifyPropertyChanged(nameof(Index));
+            }
+        }
+
         private string _id;
         public string ID
         {
-            get => _id;
+            get => IsDefaultID ? $"Chatter_{_index + 1}" : _id;
             set
             {
+                var prevDefault = IsDefaultID;
+                var newVal = _id != value;
+
                 _id = value;
-                NotifyPropertyChanged(nameof(ID));
+
+                if (newVal && !(prevDefault && IsDefaultID))
+                {
+                    NotifyPropertyChanged(nameof(ID));
+                }
             }
         }
+        public bool IsDefaultID => string.IsNullOrEmpty(_id) || new Regex("^Chatter_\\d+$").IsMatch(_id);
 
         public void ClearChatters()
         {
@@ -138,7 +159,7 @@ namespace PickChatter
 
         private readonly Dictionary<string, Chatter> chatters = new();
 
-        internal ChatterPicker(string id = "")
+        internal ChatterPicker(string id = "", int index = 0)
         {
             _id = id;
             _speechManager = new SpeechManager();
@@ -366,6 +387,43 @@ namespace PickChatter
             currentChatter.Choose();
 
             NotifyChatterChanged();
+        }
+
+        public void Dispose()
+        {
+            if (PropertyChanged is not null)
+            {
+                foreach (Delegate d in PropertyChanged.GetInvocationList())
+                {
+                    PropertyChanged -= (PropertyChangedEventHandler) d;
+                }
+            }
+
+            if (MessageChanged is not null)
+            {
+                foreach (Delegate d in MessageChanged.GetInvocationList())
+                {
+                    MessageChanged -= (EventHandler<MessageChangedEventArgs>) d;
+                }
+            }
+
+            if (ChatterChanged is not null)
+            {
+                foreach (Delegate d in ChatterChanged.GetInvocationList())
+                {
+                    ChatterChanged -= (EventHandler<ChatterChangedEventArgs>) d;
+                }
+            }
+
+            if (MessageDeleted is not null)
+            {
+                foreach (Delegate d in MessageDeleted.GetInvocationList())
+                {
+                    MessageDeleted -= (EventHandler<EventArgs>) d;
+                }
+            }
+
+            PickChatter(null);
         }
     }
 }

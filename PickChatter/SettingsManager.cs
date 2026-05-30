@@ -252,11 +252,9 @@ namespace PickChatter
 
         public void SetChatterID(int index, string id)
         {
+            EnsureChatterCount(index + 1);
+
             var chatters = ChattersSettings;
-            while (chatters.Count <= index)
-            {
-                chatters.Add(new());
-            }
 
             chatters[index].ID = id;
             ChattersSettings = chatters;
@@ -302,6 +300,18 @@ namespace PickChatter
             if (index >= 0 && index < chatters.Count)
             {
                 chatters.RemoveAt(index);
+            }
+            ChattersSettings = chatters;
+
+            Save();
+        }
+
+        public void EnsureChatterCount(int count)
+        {
+            var chatters = ChattersSettings;
+            while (chatters.Count < count)
+            {
+                chatters.Add(new());
             }
             ChattersSettings = chatters;
 

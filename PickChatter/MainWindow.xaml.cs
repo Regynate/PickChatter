@@ -93,19 +93,17 @@ namespace PickChatter
         private void UpdatePickerList()
         {
             _pickerList.Clear();
-            for (int i = 0; i < ChatterPickerList.Instance.ChatterPickers.Count; ++i)
-            {
-                var settings = SettingsManager.Instance.GetChatterSettings(i);
-                ChatterPickerList.Instance.ChatterPickers[i].ID = string.IsNullOrEmpty(settings.ID) ? $"Chatter_{i+1}" : settings.ID;
-                ChatterPickerList.Instance.ChatterPickers[i].VoiceSettings = settings.VoiceSettings;
-            }
         }
 
-        private void UpdateID(PickerTab p)
+        private string GetHeader(ChatterPicker picker)
         {
-            p.tab.Header = (string.IsNullOrEmpty(p.picker.ID) ? $"Chatter {p.index}" : p.picker.ID)
-                + (string.IsNullOrEmpty(p.picker.ChatterName) ? "" : $" - {p.picker.ChatterName}");
-            SettingsManager.Instance.SetChatterID(p.index - 1, p.picker.ID);
+            return (picker.IsDefaultID ? $"Chatter {picker.Index}" : picker.ID)
+                + (string.IsNullOrEmpty(picker.ChatterName) ? "" : $" - {picker.ChatterName}");
+        }
+
+        private void UpdateHeader(PickerTab p)
+        {
+            p.tab.Header = GetHeader(p.picker);
         }
 
         private void UpdateTabs()
@@ -118,7 +116,7 @@ namespace PickChatter
                 var page = new ChatterPage(picker);
                 var tab = new TabItem()
                 {
-                    Header = string.IsNullOrEmpty(picker.ID) ? $"Chatter {i}" : picker.ID,
+                    Header = GetHeader(picker),
                     Content = new Frame()
                     {
                         Content = page,
@@ -137,14 +135,15 @@ namespace PickChatter
 
                         if (p != null)
                         {
-                            UpdateID(p);
+                            UpdateHeader(p);
+                            SettingsManager.Instance.SetChatterID(p.index - 1, p.picker.IsDefaultID ? "" : p.picker.ID);
                         }
                     }
 
                     if (args.PropertyName == nameof(ChatterPicker.ChatterName))
                     {
                         var p = _pickerList.FirstOrDefault(x => x.picker == picker);
-                        UpdateID(p);
+                        UpdateHeader(p);
                     }
                 };
 
@@ -161,7 +160,6 @@ namespace PickChatter
                 int index = CurrentTabIndex;
 
                 ChatterPickerList.Instance.RemovePicker(CurrentPicker);
-                SettingsManager.Instance.RemoveChatter(index);
                 UpdatePickerList();
                 UpdateTabs();
                 ChattersTabContainer.SelectedIndex = index < _pickerList.Count ? index : _pickerList.Count - 1;

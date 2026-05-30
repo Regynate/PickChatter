@@ -55,7 +55,7 @@ namespace PickChatter
 
         private void Application_Exit(object sender, ExitEventArgs e)
         {
-            ChatterPickerList.Instance.Clear();
+            //ChatterPickerList.Instance.Clear();
         }
     }
 }

@@ -89,11 +89,6 @@ namespace PickChatter
             }
         }
 
-        private void ChatterIDTextBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            _picker.ID = ChatterIDTextBox.Text;
-        }
-
         private void VoiceSettingsButton_Click(object sender, RoutedEventArgs e)
         {
             VoiceSettingsWindow window = new(_picker.SpeechManager, _picker.VoiceSettings, _picker.ID)
