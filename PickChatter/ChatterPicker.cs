@@ -43,7 +43,7 @@ namespace PickChatter
 
         private void NotifyPropertyChanged([CallerMemberName] string? name = null)
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+            Application.Current.Dispatcher.Invoke(() => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name)));
         }
 
         private void NotifyMessageChanged()
@@ -200,9 +200,7 @@ namespace PickChatter
         {
             if (username == currentChatter?.Username)
             {
-                currentChatter = null;
-                NotifyChatterChanged();
-                NotifyMessageDeleted();
+                PickChatter("");
             }
 
             if (chatters.TryGetValue(username, out Chatter? chatter))
