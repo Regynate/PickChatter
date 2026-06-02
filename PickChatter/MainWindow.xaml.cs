@@ -97,7 +97,8 @@ namespace PickChatter
 
         private string GetHeader(ChatterPicker picker)
         {
-            return (picker.IsDefaultID ? $"Chatter {picker.Index}" : picker.ID)
+            return (picker.SpeechManager.SpeechSpeaking ? "🗣" : "") +
+                (picker.IsDefaultID ? $"Chatter {picker.Index}" : picker.ID)
                 + (string.IsNullOrEmpty(picker.ChatterName) ? "" : $" - {picker.ChatterName}");
         }
 
@@ -144,6 +145,18 @@ namespace PickChatter
                     {
                         var p = _pickerList.FirstOrDefault(x => x.picker == picker);
                         UpdateHeader(p);
+                    }
+                };
+                picker.SpeechManager.PropertyChanged += (sender, args) =>
+                {
+                    if (args.PropertyName == nameof(SpeechManager.SpeechSpeaking))
+                    {
+                        var p = _pickerList.FirstOrDefault(x => x.picker == picker);
+
+                        if (p != null)
+                        {
+                            UpdateHeader(p);
+                        }
                     }
                 };
 

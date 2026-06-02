@@ -9,6 +9,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Threading;
+using System.Windows;
 
 namespace PickChatter
 {
@@ -48,7 +49,8 @@ namespace PickChatter
 
         public List<string> AvailableVoices => manager.AvailableVoices;
 
-        public string CurrentVoice {
+        public string CurrentVoice
+        {
             get => manager.CurrentVoice;
             set
             {
@@ -58,7 +60,7 @@ namespace PickChatter
                 }
             }
         }
-            
+
         public void SetSettings(VoiceSettings settings)
         {
             Type = settings.SpeechSynthesisType;
@@ -80,7 +82,11 @@ namespace PickChatter
 
         private void OnStateChanged(object? sender, EventArgs args)
         {
-            PropertyChanged?.Invoke(this, new(nameof(SpeakButtonText)));
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                PropertyChanged?.Invoke(this, new(nameof(SpeechSpeaking)));
+                PropertyChanged?.Invoke(this, new(nameof(SpeakButtonText)));
+            });
         }
 
         private void UpdateManager()
@@ -96,7 +102,7 @@ namespace PickChatter
             };
 
             manager.StateChanged += OnStateChanged;
-        }    
+        }
 
         public SpeechManager()
         {
