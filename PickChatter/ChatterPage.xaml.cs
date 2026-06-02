@@ -45,7 +45,7 @@ namespace PickChatter
             var message = _picker.LastMessage;
             if (!string.IsNullOrWhiteSpace(message))
             {
-                Dispatcher.Invoke(() => _picker.SpeechManager.Speak(_picker.ID, message));
+                Application.Current.Dispatcher.Invoke(() => _picker.SpeechManager.Speak(_picker.ID, message));
             }
         }
 
@@ -57,7 +57,7 @@ namespace PickChatter
 
         private void PickRandomChatterButton_Click(object sender, RoutedEventArgs e)
         {
-            Dispatcher.Invoke(() => _picker.SpeechManager.Stop(_picker.ID));
+            Application.Current.Dispatcher.Invoke(() => _picker.SpeechManager.Stop(_picker.ID));
             if (!_picker.PickRandomChatter())
             {
                 App.ShowMessage("There are no chatters to select from");

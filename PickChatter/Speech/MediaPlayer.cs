@@ -23,6 +23,8 @@ namespace PickChatter
         private ISoundOut? soundOut;
         private IWaveSource? waveSource;
 
+        private bool _isInitializing = false;
+
         public event EventHandler<PlaybackStoppedEventArgs>? MediaEnded;
         public event EventHandler<UnhandledExceptionEventArgs>? MediaFailed;
         public event EventHandler<EventArgs>? MediaOpened;
@@ -59,6 +61,8 @@ namespace PickChatter
 
         private async Task OpenTask(string filename, MMDevice device)
         {
+            CleanupPlayback();
+
             Exception? exception = null;
 
             for (int i = 0; i < 10; i++)
@@ -93,7 +97,11 @@ namespace PickChatter
 
         public void Open(string filename, MMDevice device)
         {
-            CleanupPlayback();
+            if (_isInitializing)
+            {
+                return;
+            }
+            _isInitializing = true;
             Task.Run(async () => await OpenTask(filename, device)).ContinueWith(t =>
             {
                 if (t.IsFaulted)
@@ -105,6 +113,8 @@ namespace PickChatter
                 {
                     MediaOpened?.Invoke(this, EventArgs.Empty);
                 }
+
+                _isInitializing = false;
             });
         }
         public void Open(string filename)
@@ -119,12 +129,12 @@ namespace PickChatter
 
         public void Pause()
         {
-            soundOut?.Pause();
+            Task.Run(() => soundOut?.Pause());
         }
 
         public void Stop()
         {
-            soundOut?.Stop();
+            Task.Run(() => soundOut?.Stop());
         }
 
         private void CleanupPlayback()
@@ -133,6 +143,10 @@ namespace PickChatter
             {
                 try
                 {
+                    if (MediaEnded != null)
+                    {
+                        soundOut.Stopped -= MediaEnded;
+                    }
                     soundOut.Dispose();
                 }
                 catch { }

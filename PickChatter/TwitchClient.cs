@@ -106,7 +106,10 @@ namespace PickChatter
             {
                 while (true)
                 {
-                    PropertyChanged?.Invoke(this, new(nameof(StatusBarString)));
+                    Application.Current?.Dispatcher.Invoke(() =>
+                    {
+                        PropertyChanged?.Invoke(this, new(nameof(StatusBarString)));
+                    });
                     Thread.Sleep(200);
                 }
             });

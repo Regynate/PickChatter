@@ -43,7 +43,7 @@ namespace PickChatter
 
         private void NotifyPropertyChanged([CallerMemberName] string? name = null)
         {
-            Application.Current.Dispatcher.Invoke(() => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name)));
+            Application.Current?.Dispatcher.Invoke(() => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name)));
         }
 
         private void NotifyMessageChanged()

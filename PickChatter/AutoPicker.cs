@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
+using System.Windows;
 
 namespace PickChatter
 {
@@ -123,7 +124,10 @@ namespace PickChatter
 
         private void NotifyPropertyChanged(string name)
         {
-            PropertyChanged?.Invoke(this, new(name));
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                PropertyChanged?.Invoke(this, new(name));
+            });
         }
     }
 }

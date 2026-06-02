@@ -36,7 +36,12 @@ namespace PickChatter
                 {
                     _type = value;
                     UpdateManager();
-                    PropertyChanged?.Invoke(this, new(nameof(Type)));
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        PropertyChanged?.Invoke(this, new(nameof(Type)));
+                        PropertyChanged?.Invoke(this, new(nameof(AvailableVoices)));
+                        PropertyChanged?.Invoke(this, new(nameof(CurrentVoice)));
+                    });
                 }
             }
         }
