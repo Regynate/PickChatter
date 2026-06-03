@@ -177,6 +177,22 @@ namespace PickChatter
                 }
             }
             );
+
+            WebSocketServer.Instance.AudioEnded += (_, args) =>
+            {
+                if (args.ID == ID)
+                {
+                    SpeechManager.OnBrowserAudioEnded();
+                }
+            };
+
+            WebSocketServer.Instance.AudioStarted += (_, args) =>
+            {
+                if (args.ID == ID)
+                {
+                    SpeechManager.OnBrowserAudioStarted();
+                }
+            };
         }
 
         private void OnMessageDeleted(string messageID)

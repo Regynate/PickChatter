@@ -35,6 +35,16 @@ namespace PickChatter
             synthesizer.SpeakAsyncCancelAll();
         }
 
+        public void OnBrowserAudioStarted()
+        {
+            // do nothing
+        }
+
+        public void OnBrowserAudioEnded()
+        {
+            // do nothing
+        }
+
         public event EventHandler<EventArgs>? StateChanged;
 
         public MicrosoftSpeechManager()

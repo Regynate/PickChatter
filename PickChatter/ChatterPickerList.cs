@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace PickChatter
 {
@@ -13,6 +14,8 @@ namespace PickChatter
 
         public IReadOnlyList<ChatterPicker> ChatterPickers => pickers;
 
+        public event EventHandler<EventArgs>? PickersChanged;
+
         public void UpdateIDs()
         {
             for (int i = 0; i < ChatterPickers.Count; ++i)
@@ -21,14 +24,22 @@ namespace PickChatter
             }
         }
 
-        internal ChatterPicker AddChatterPicker()
+        internal ChatterPicker AddChatterPicker(string? id = null)
         {
             ChatterPicker picker = new();
             pickers.Add(picker);
             picker.Index = pickers.Count - 1;
             SettingsManager.Instance.EnsureChatterCount(pickers.Count);
             var settings = SettingsManager.Instance.GetChatterSettings(picker.Index);
-            picker.ID = settings.ID;
+            if (string.IsNullOrEmpty(id))
+            {
+                picker.ID = settings.ID;
+            }
+            else
+            {
+                picker.ID = id;
+                SettingsManager.Instance.SetChatterID(picker.Index, picker.ID);
+            }
             picker.VoiceSettings = settings.VoiceSettings;
 
             picker.MessageChanged += (_, args) =>
@@ -61,6 +72,8 @@ namespace PickChatter
                 }
             };
 
+            Application.Current.Dispatcher.Invoke(() => PickersChanged?.Invoke(this, EventArgs.Empty));
+
             return picker;
         }
 
@@ -70,6 +83,8 @@ namespace PickChatter
             {
                 RemovePicker(pickers.First(), false);
             }
+
+            Application.Current.Dispatcher.Invoke(() => PickersChanged?.Invoke(this, EventArgs.Empty));
         }
 
         public void ClearChatters()
@@ -80,7 +95,7 @@ namespace PickChatter
             }
         }
 
-        internal void RemovePicker(ChatterPicker picker, bool update = true)
+        public void RemovePicker(ChatterPicker picker, bool update = true)
         {
             SettingsManager.Instance.RemoveChatter(picker.Index);
 
@@ -90,7 +105,21 @@ namespace PickChatter
             if (update)
             {
                 UpdateIDs();
+                Application.Current.Dispatcher.Invoke(() => PickersChanged?.Invoke(this, EventArgs.Empty));
             }
+        }
+
+        public void RemovePicker(string id)
+        {
+            foreach (var picker in GetPickers(id))
+            {
+                RemovePicker(picker);
+            }
+        }
+
+        public List<ChatterPicker> GetPickers(string id)
+        {
+            return pickers.Where(p => p.ID == id).ToList();
         }
 
         public void SetPickerCount(int count)

@@ -62,6 +62,7 @@ namespace PickChatter
                 if (manager.AvailableVoices.Contains(value))
                 {
                     manager.CurrentVoice = value;
+                    Application.Current.Dispatcher.Invoke(() => PropertyChanged?.Invoke(this, new(nameof(CurrentVoice))));
                 }
             }
         }
@@ -83,6 +84,16 @@ namespace PickChatter
         public void Stop(string id)
         {
             manager.Stop(id);
+        }
+
+        public void OnBrowserAudioStarted()
+        {
+            manager.OnBrowserAudioStarted();
+        }
+
+        public void OnBrowserAudioEnded()
+        {
+            manager.OnBrowserAudioEnded();
         }
 
         private void OnStateChanged(object? sender, EventArgs args)

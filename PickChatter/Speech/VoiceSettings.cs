@@ -55,14 +55,37 @@ namespace PickChatter
             set => SetProperty(ref _speechSynthesisType, value, nameof(VoiceName));
         }
 
-        public string VoiceName =>
-            SpeechSynthesisType switch
+        public string VoiceName
+        {
+            get
             {
-                SpeechManager.SpeechSynthesisType.AmazonSynthesis => AmazonVoice,
-                SpeechManager.SpeechSynthesisType.ElevenlabsSynthesis => ElevenlabsVoice,
-                SpeechManager.SpeechSynthesisType.GoogleSynthesis => GoogleVoice,
-                _ => MicrosoftVoice
-            };
+                return SpeechSynthesisType switch
+                {
+                    SpeechManager.SpeechSynthesisType.AmazonSynthesis => AmazonVoice,
+                    SpeechManager.SpeechSynthesisType.ElevenlabsSynthesis => ElevenlabsVoice,
+                    SpeechManager.SpeechSynthesisType.GoogleSynthesis => GoogleVoice,
+                    _ => MicrosoftVoice
+                };
+            }
+            set
+            {
+                switch (SpeechSynthesisType)
+                {
+                    case SpeechManager.SpeechSynthesisType.AmazonSynthesis:
+                        AmazonVoice = value;
+                        break;
+                    case SpeechManager.SpeechSynthesisType.ElevenlabsSynthesis:
+                        ElevenlabsVoice = value;
+                        break;
+                    case SpeechManager.SpeechSynthesisType.GoogleSynthesis:
+                        GoogleVoice = value;
+                        break;
+                    default:
+                        MicrosoftVoice = value;
+                        break;
+                }
+            }
+        }
 
         public event PropertyChangedEventHandler? PropertyChanged;
 

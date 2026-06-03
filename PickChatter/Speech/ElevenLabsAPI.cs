@@ -39,7 +39,7 @@ namespace PickChatter
                 return true;
             }
 
-            audioData = response.RawBytes;
+            audioData = response.RawBytes ?? [];
 
             return false;
         }

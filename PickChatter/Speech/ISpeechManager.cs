@@ -20,6 +20,10 @@ namespace PickChatter
 
         public void Stop(string id);
 
+        public void OnBrowserAudioStarted();
+
+        public void OnBrowserAudioEnded();
+
         public event EventHandler<EventArgs>? StateChanged;
     }
 }

@@ -46,7 +46,7 @@ namespace PickChatter
             }
             if (SettingsManager.Instance.PlayAudioInBrowser)
             {
-                browserSpeaking = WebSocketServer.Instance.SendAudioUrl(id, GetAudioUrl(message));
+                WebSocketServer.Instance.SendAudioUrl(id, GetAudioUrl(message));
             }
             StateChanged?.Invoke(this, EventArgs.Empty);
         }
@@ -89,12 +89,18 @@ namespace PickChatter
                 appSpeaking = false;
                 StateChanged?.Invoke(this, EventArgs.Empty);
             };
+        }
 
-            WebSocketServer.Instance.AudioEnded += (_, args) =>
-            {
-                browserSpeaking = false;
-                StateChanged?.Invoke(this, EventArgs.Empty);
-            };
+        public void OnBrowserAudioStarted()
+        {
+            browserSpeaking = true;
+            StateChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        public void OnBrowserAudioEnded()
+        {
+            browserSpeaking = false;
+            StateChanged?.Invoke(this, EventArgs.Empty);
         }
     }
 }

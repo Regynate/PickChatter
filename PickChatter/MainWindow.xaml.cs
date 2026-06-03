@@ -45,7 +45,6 @@ namespace PickChatter
         {
             InitializeComponent();
             _pickerList = new();
-            UpdatePickerList();
 
             _tabAddNewTab = new TabItem()
             {
@@ -56,7 +55,9 @@ namespace PickChatter
 
             ChattersTabContainer.SelectionChanged += ChattersTab_SelectionChanged;
 
-            UpdateTabs();
+            UpdatePickerList();
+
+            ChatterPickerList.Instance.PickersChanged += (_, _) => UpdatePickerList();
 
             DataContext = this;
         }
@@ -77,8 +78,6 @@ namespace PickChatter
         private void AddPicker()
         {
             ChatterPickerList.Instance.AddChatterPicker();
-            UpdatePickerList();
-            UpdateTabs();
             ChattersTabContainer.SelectedIndex = _pickerList.Count - 1;
         }
 
@@ -93,12 +92,13 @@ namespace PickChatter
         private void UpdatePickerList()
         {
             _pickerList.Clear();
+            UpdateTabs();
         }
 
         private string GetHeader(ChatterPicker picker)
         {
             return (picker.SpeechManager.SpeechSpeaking ? "🗣" : "") +
-                (picker.IsDefaultID ? $"Chatter {picker.Index}" : picker.ID)
+                (picker.IsDefaultID ? $"Chatter {picker.Index + 1}" : picker.ID)
                 + (string.IsNullOrEmpty(picker.ChatterName) ? "" : $" - {picker.ChatterName}");
         }
 
@@ -173,8 +173,6 @@ namespace PickChatter
                 int index = CurrentTabIndex;
 
                 ChatterPickerList.Instance.RemovePicker(CurrentPicker);
-                UpdatePickerList();
-                UpdateTabs();
                 ChattersTabContainer.SelectedIndex = index < _pickerList.Count ? index : _pickerList.Count - 1;
             }
 
