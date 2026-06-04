@@ -122,9 +122,9 @@ namespace PickChatter
                             AudioStarted?.Invoke(this, new(id.GetString()!));
                             break;
                         }
+                        //todo: add response to commands
                         case "addChatterTab":
                         {
-                            //todo: add response to command
                             ChatterPickerList.Instance.AddChatterPicker(id.GetString());
                             break;
                         }
@@ -157,12 +157,18 @@ namespace PickChatter
                         {
                             foreach (var picker in ChatterPickerList.Instance.GetPickers(id.GetString()!))
                             {
-                                if (root.TryGetProperty("voiceType", out JsonElement voiceType) &&
-                                    root.TryGetProperty("voice", out JsonElement voice))
+                                if (root.TryGetProperty("voiceType", out JsonElement voiceType))
                                 {
                                     var settings = picker.VoiceSettings;
                                     settings.SpeechSynthesisType = Enum.Parse<SpeechManager.SpeechSynthesisType>(voiceType.GetString()!, true);
-                                    settings.VoiceName = voice.GetString()!;
+                                    if (root.TryGetProperty("voiceName", out JsonElement voice))
+                                    {
+                                        settings.VoiceName = voice.GetString()!;
+                                    }
+                                    else if (root.TryGetProperty("voiceId", out JsonElement voiceId))
+                                    {
+                                        settings.SetVoiceID(voiceId.GetString()!);
+                                    }
                                     picker.VoiceSettings = settings;
                                 }
                             }

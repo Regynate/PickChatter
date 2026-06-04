@@ -12,7 +12,7 @@ namespace PickChatter
 
         public abstract List<string> AvailableVoices { get; }
 
-        protected abstract string VoiceID { get; }
+        protected abstract string? VoiceID { get; }
 
         public string CurrentVoice { get; set; }
 

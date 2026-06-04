@@ -48,13 +48,13 @@ namespace PickChatter
 
         private void NotifyMessageChanged()
         {
-            MessageChanged?.Invoke(this, new(LastMessage ?? "", currentChatter?.Color ?? "", TokenizedLastMessage ?? ""));
+            Application.Current?.Dispatcher.Invoke(() => MessageChanged?.Invoke(this, new(LastMessage ?? "", currentChatter?.Color ?? "", TokenizedLastMessage ?? "")));
             NotifyPropertyChanged(nameof(LastMessage));
         }
 
         private void NotifyChatterChanged()
         {
-            ChatterChanged?.Invoke(this, new(ChatterName ?? ""));
+            Application.Current?.Dispatcher.Invoke(() => ChatterChanged?.Invoke(this, new(ChatterName ?? "")));
             NotifyPropertyChanged(nameof(ChatterName));
             NotifyMessageChanged();
         }
@@ -161,6 +161,14 @@ namespace PickChatter
 
         internal ChatterPicker(string id = "", int index = 0)
         {
+            // this is probably a hack but i don't care
+            if (_default != null)
+            {
+                chatters = _default.chatters;
+                filteredChatters = _default.filteredChatters;
+                processedMessagesCount = _default.processedMessagesCount;
+            }
+
             _id = id;
             _speechManager = new SpeechManager();
             TwitchClient.Instance.MessageReceived += OnMessageReceived;
@@ -439,5 +447,7 @@ namespace PickChatter
 
             PickChatter(null);
         }
+
+        private static ChatterPicker _default = new();
     }
 }

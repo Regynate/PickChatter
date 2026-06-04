@@ -13,16 +13,26 @@ namespace PickChatter
 
         public override List<string> AvailableVoices => voices.Select(e => e.Name).ToList();
 
-        protected override string VoiceID => CurrentVoice;
+        protected override string? VoiceID => _voiceIDs.TryGetValue(CurrentVoice, out string? value) ? value : null;
 
         protected override string GetAudioUrl(string message)
         {
-            if (CurrentVoice is null || !_voiceIDs.ContainsKey(VoiceID))
+            if (CurrentVoice is null)
             {
                 return "";
             }
 
-            return $"http://localhost:8876/11labs?message={Uri.EscapeDataString(message)}&voice={_voiceIDs[VoiceID]}";
+            return $"http://localhost:8876/11labs?message={Uri.EscapeDataString(message)}&voice={VoiceID}";
+        }
+
+        public string GetVoiceByID(string voiceID)
+        {
+            if (_voiceIDs.ContainsValue(voiceID))
+            {
+                return _voiceIDs.FirstOrDefault(x => x.Value == voiceID).Key;
+            }
+
+            return "";
         }
 
         private static List<(string Name, string ID)> voices = ElevenLabsAPI.GetVoices();

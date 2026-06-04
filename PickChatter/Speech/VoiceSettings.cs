@@ -87,6 +87,20 @@ namespace PickChatter
             }
         }
 
+        public void SetVoiceID(string voiceID)
+        {
+            switch (SpeechSynthesisType)
+            {
+                case SpeechManager.SpeechSynthesisType.ElevenlabsSynthesis:
+                    ElevenlabsVoice = ElevenlabsSpeechManager.Instance.GetVoiceByID(voiceID);
+                    break;
+                case SpeechManager.SpeechSynthesisType.AmazonSynthesis:
+                case SpeechManager.SpeechSynthesisType.GoogleSynthesis:
+                default:
+                    break;
+            }
+        }
+
         public event PropertyChangedEventHandler? PropertyChanged;
 
         protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
