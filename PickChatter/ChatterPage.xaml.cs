@@ -53,10 +53,12 @@ namespace PickChatter
         {
             string chatter = PickSpecificTextBox.Text;
             _picker.PickChatter(chatter);
+            PickSpecificTextBox.Text = "";
         }
 
         private void PickRandomChatterButton_Click(object sender, RoutedEventArgs e)
         {
+            PickSpecificTextBox.Text = "";
             Application.Current.Dispatcher.Invoke(() => _picker.SpeechManager.Stop(_picker.ID));
             if (!_picker.PickRandomChatter())
             {
@@ -101,6 +103,11 @@ namespace PickChatter
 
             _picker.UpdateSpeechSettings();
             SettingsManager.Instance.SetChatterVoiceSettings(_picker.ID, _picker.VoiceSettings);
+        }
+
+        private void RemoveChatterButton_Click(object sender, RoutedEventArgs e)
+        {
+            _picker.PickChatter(null);
         }
     }
 }
