@@ -385,7 +385,7 @@ namespace PickChatter.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool PlayAudioInBrowser {
             get {
                 return ((bool)(this["PlayAudioInBrowser"]));
@@ -428,6 +428,18 @@ namespace PickChatter.Properties {
             }
             set {
                 this["ElevenLabsAPIKey"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int Rule5Cooldown {
+            get {
+                return ((int)(this["Rule5Cooldown"]));
+            }
+            set {
+                this["Rule5Cooldown"] = value;
             }
         }
     }

@@ -61,7 +61,10 @@
                 <TextBox HorizontalAlignment="Left" IsEnabled="{Binding ElementName=ExcludeBotsRule, Path=IsChecked}" Margin="5,0,0,0" VerticalAlignment="Center" TextWrapping="NoWrap" Width="150" Text="{Binding ExcludeUsersString}"/>
             </StackPanel>
             <CheckBox x:Name="ExcludeCommandMessagesRule" Content="Ignore command messages (starting with &quot;!&quot;)" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Center" IsChecked="{Binding ExcludeCommandsEnabled}"/>
-            <CheckBox x:Name="Rule5Checkbox" Content="Don't pick the same person more than once" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Center" IsChecked="{Binding Rule5Enabled}"/>
+            <StackPanel HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Orientation="Horizontal">
+                <CheckBox x:Name="Rule5Checkbox" Content="User cooldown (seconds):" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Center" IsChecked="{Binding Rule5Enabled}"/>
+                <TextBox IsEnabled="{Binding IsChecked, ElementName=Rule5Checkbox}" Margin="5,0,0,0" TextWrapping="NoWrap" Width="100" Text="{Binding Rule5Cooldown}" PreviewTextInput="NumberValidationTextBox"/>
+            </StackPanel>
         </StackPanel>
         <TextBlock Text="Auto-selecting" FontSize="18" HorizontalAlignment="Left" Margin="40,275,0,0" VerticalAlignment="Top" TextWrapping="Wrap"/>
         <StackPanel HorizontalAlignment="Left" Margin="40,305,0,0" VerticalAlignment="Top" Orientation="Horizontal">
@@ -80,7 +83,7 @@
                 </StackPanel>
                 <StackPanel HorizontalAlignment="Left" Margin="40,10,0,0" VerticalAlignment="Top" Orientation="Vertical" IsEnabled="{Binding ElementName=EnableSpeechSynthesisCheckbox, Path=IsChecked}">
                     <CheckBox HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" Content="Play audio in app" IsChecked="{Binding PlayAudioInApp}" x:Name="PlayAudioInAppCheckbox"/>
-                    <CheckBox HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Content="Play audio in browser source (Amazon &amp; Google voice only)" IsChecked="{Binding PlayAudioInBrowser}" x:Name="PlayAudioInBrowserCheckbox"/>
+                    <CheckBox HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Content="Send audio via websocket" IsChecked="{Binding PlayAudioInBrowser}" x:Name="PlayAudioInBrowserCheckbox"/>
                 </StackPanel>
             </StackPanel>
             <StackPanel HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Top" Orientation="Horizontal">

@@ -213,6 +213,12 @@ namespace PickChatter
             set => SetProperty(nameof(Settings.Default.Rule5Enabled), value);
         }
 
+        public int Rule5Cooldown
+        {
+            get => GetProperty<int>(nameof(Settings.Default.Rule5Cooldown));
+            set => SetProperty(nameof(Settings.Default.Rule5Cooldown), value);
+        }
+
         public bool PlayAudioInBrowser
         {
             get => GetProperty<bool>(nameof(Settings.Default.PlayAudioInBrowser));

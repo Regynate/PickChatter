@@ -48,6 +48,7 @@ namespace PickChatter
         private EmoteSet? emoteSet;
         public string? TokenizedLastMessage => HasMessage ? TwitchClient.Instance.ConvertToEmoteJson(LastMessage, emoteSet!) : "";
         public bool ChosenBefore { get; private set; }
+        public DateTime LastChosenTime { get; private set; }
 
         public void Update(ChatMessage message)
         {
@@ -98,6 +99,7 @@ namespace PickChatter
         public void Choose()
         {
             ChosenBefore = true;
+            LastChosenTime = DateTime.Now;
         }
     }
 }

@@ -303,7 +303,13 @@ namespace PickChatter
 
         private static bool Rule5(Chatter chatter)
         {
-            return !SettingsManager.Instance.Rule5Enabled || !chatter.ChosenBefore;
+            if (!SettingsManager.Instance.Rule5Enabled)
+            {
+                return true;
+            }
+
+            return !chatter.ChosenBefore
+                || DateTime.Now - chatter.LastChosenTime > TimeSpan.FromSeconds(SettingsManager.Instance.Rule5Cooldown);
         }
 
         private static bool SatisfiesRules(Chatter chatter)
