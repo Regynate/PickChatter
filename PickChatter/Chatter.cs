@@ -44,11 +44,24 @@ namespace PickChatter
         public bool IsVIP { get; private set; }
         public bool HasMessage => messages.Count > 0;
         public DateTime Timestamp => HasMessage ? messages.Last().Timestamp : DateTime.MinValue;
-        public string LastMessage => HasMessage ? messages.Last().PlainContent : "";
+        public string LastMessage => HasMessage ? LimitMessageLength(messages.Last().PlainContent) : "";
         private EmoteSet? emoteSet;
         public string? TokenizedLastMessage => HasMessage ? TwitchClient.Instance.ConvertToEmoteJson(LastMessage, emoteSet!) : "";
         public bool ChosenBefore { get; private set; }
         public DateTime LastChosenTime { get; private set; }
+
+        private string LimitMessageLength(string text)
+        {
+            var wordCount = SettingsManager.Instance.WordLimit;
+            if (wordCount <= 0 || !SettingsManager.Instance.WordLimitEnabled)
+            {
+                return text;
+            }
+
+            var words = text.Split(' ');
+
+            return string.Join(' ', words.Take(wordCount)) + (words.Length > wordCount ? "..." : "");
+        }
 
         public void Update(ChatMessage message)
         {

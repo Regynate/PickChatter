@@ -219,6 +219,18 @@ namespace PickChatter
             set => SetProperty(nameof(Settings.Default.Rule5Cooldown), value);
         }
 
+        public int WordLimit
+        {
+            get => GetProperty<int>(nameof(Settings.Default.WordLimit));
+            set => SetProperty(nameof(Settings.Default.WordLimit), value);
+        }
+
+        public bool WordLimitEnabled
+        {
+            get => GetProperty<bool>(nameof(Settings.Default.WordLimitEnabled));
+            set => SetProperty(nameof(Settings.Default.WordLimitEnabled), value);
+        }
+
         public bool PlayAudioInBrowser
         {
             get => GetProperty<bool>(nameof(Settings.Default.PlayAudioInBrowser));

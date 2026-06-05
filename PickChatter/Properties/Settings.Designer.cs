@@ -442,5 +442,29 @@ namespace PickChatter.Properties {
                 this["Rule5Cooldown"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int WordLimit {
+            get {
+                return ((int)(this["WordLimit"]));
+            }
+            set {
+                this["WordLimit"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool WordLimitEnabled {
+            get {
+                return ((bool)(this["WordLimitEnabled"]));
+            }
+            set {
+                this["WordLimitEnabled"] = value;
+            }
+        }
     }
 }
