@@ -93,6 +93,8 @@ namespace PickChatter
             }
         }
 
+        public string? ChatterUsername => currentChatter?.Username;
+
         public string? LastMessage => currentChatter?.LastMessage;
         public string? TokenizedLastMessage => currentChatter?.TokenizedLastMessage;
 
@@ -217,7 +219,6 @@ namespace PickChatter
                     return;
                 }
             }
-
         }
 
         private void OnUserBanned(string username)

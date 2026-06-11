@@ -235,6 +235,11 @@ namespace PickChatter
             SendConnectionMessage(connection, new { type = "remaining-time", id, time });
         }
 
+        public void Send(string type, string id, object data)
+        {
+            Broadcast(new { type, id, data });
+        }
+
         private static readonly WebSocketServer instance = new WebSocketServer();
         public static WebSocketServer Instance => instance;
     }

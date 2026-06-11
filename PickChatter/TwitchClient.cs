@@ -18,7 +18,9 @@ using TwitchLib.Api.Core.Exceptions;
 using TwitchLib.Client.Events;
 using TwitchLib.Client.Exceptions;
 using TwitchLib.Client.Models;
+using TwitchLib.Communication.Clients;
 using TwitchLib.Communication.Events;
+using TwitchLib.PubSub.Events;
 
 namespace PickChatter
 {
@@ -34,6 +36,10 @@ namespace PickChatter
         public event EventHandler<OnUserTimedoutArgs>? UserTimedOut;
         public event EventHandler<OnUserBannedArgs>? UserBanned;
         public event EventHandler<OnMessageClearedArgs>? MessageDeleted;
+        public event EventHandler<OnMessageReceivedArgs>? BitsReceived;
+        public event EventHandler<OnGiftedSubscriptionArgs>? GiftedSubscription;
+        public event EventHandler<OnCommunitySubscriptionArgs>? MultiGiftedSubscription;
+        public event EventHandler<OnMessageReceivedArgs>? ChannelPointRedemption;
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -42,7 +48,11 @@ namespace PickChatter
 
         private int connectionAttempt = 0;
 
-        public string StatusBarString { get
+        private string? _channel;
+
+        public string StatusBarString
+        {
+            get
             {
                 string baseString = "Twitch client ";
                 if (client.IsInitialized)
@@ -95,10 +105,23 @@ namespace PickChatter
             client.OnError += OnError;
             client.OnIncorrectLogin += OnIncorrectLogin;
             client.OnJoinedChannel += OnJoinedChannel;
-            client.OnMessageReceived += (sender, args) => MessageReceived?.Invoke(this, args);
+            client.OnMessageReceived += (sender, args) =>
+            {
+                MessageReceived?.Invoke(this, args);
+                if (args.ChatMessage.Bits > 0)
+                {
+                    BitsReceived?.Invoke(this, args);
+                }
+                if (!string.IsNullOrEmpty(args.ChatMessage.CustomRewardId))
+                {
+                    ChannelPointRedemption?.Invoke(this, args);
+                }
+            };
             client.OnUserBanned += (sender, args) => UserBanned?.Invoke(this, args);
             client.OnUserTimedout += (sender, args) => UserTimedOut?.Invoke(this, args);
             client.OnMessageCleared += (sender, args) => MessageDeleted?.Invoke(this, args);
+            client.OnGiftedSubscription += (sender, args) => GiftedSubscription?.Invoke(this, args);
+            client.OnCommunitySubscription += (sender, args) => MultiGiftedSubscription?.Invoke(this, args);
 
             client.WillReplaceEmotes = true;
 
@@ -135,7 +158,7 @@ namespace PickChatter
             emotesLoaded = false;
             emotes = new();
             string userId = (await api.Helix.Users.GetUsersAsync(logins: new List<string>() { channel })).Users[0].Id;
-                
+
             var client = new HttpClient();
             var response = await client.GetAsync($"https://api.betterttv.net/3/cached/emotes/global");
             if (response.IsSuccessStatusCode)
@@ -164,7 +187,7 @@ namespace PickChatter
                 }
                 catch { }
             }
-                
+
             response = await client.GetAsync($"https://api.frankerfacez.com/v1/room/id/{userId}");
             if (response.IsSuccessStatusCode)
             {
@@ -204,6 +227,8 @@ namespace PickChatter
 
         public void UpdateChannel(string newChannel, bool updateEmotes = true)
         {
+            _channel = newChannel;
+
             if (updateEmotes)
             {
                 Task.Run(() => InitializeEmotes(newChannel));
@@ -255,8 +280,25 @@ namespace PickChatter
             while (!client.IsConnected);
         }
 
+        private string? GetChannelId()
+        {
+            if (!string.IsNullOrWhiteSpace(_channel))
+            {
+                try
+                {
+                    return api.Helix.Users.GetUsersAsync(logins: [_channel]).Result.Users[0].Id;
+                }
+                catch (Exception ex)
+                {
+                    App.ShowMessage("Couldn't get channel id: " + ex.Message);
+                }
+            }
+            return null;
+        }
+
         public void Initialize(string username, string oauth, string? channel)
         {
+            _channel = channel;
 
             connectionAttempt = 0;
             try
@@ -311,7 +353,7 @@ namespace PickChatter
             string channel = SettingsManager.Instance.TwitchChannel;
 
             if (!string.IsNullOrWhiteSpace(username) && !string.IsNullOrWhiteSpace(token))
-            { 
+            {
                 if (string.IsNullOrWhiteSpace(channel))
                 {
                     Task.Run(() => Initialize(username, token));
@@ -343,7 +385,7 @@ namespace PickChatter
 
             List<IMessageToken> tokens = new();
 
-            foreach(string split in regex.Split(message))
+            foreach (string split in regex.Split(message))
             {
                 if (presentEmotes.TryGetValue(split, out string? url))
                 {
@@ -365,8 +407,8 @@ namespace PickChatter
 
         public void StartBrowserAuth()
         {
-            string url = "https://id.twitch.tv/oauth2/authorize?" + 
-                "client_id=" + api.Settings.ClientId + 
+            string url = "https://id.twitch.tv/oauth2/authorize?" +
+                "client_id=" + api.Settings.ClientId +
                 "&redirect_uri=" + HttpServer.Instance.TwitchURL +
                 "&state=" + HttpServer.Instance.GenerateStateString() +
                 "&force_verify=false&response_type=token&scope=chat:read";
@@ -393,7 +435,7 @@ namespace PickChatter
 
         private void OnIncorrectLogin(object? sender, OnIncorrectLoginArgs e)
         {
-            if (App.ShowMessage("The login token is incorrect or expired. Try to reconnect now?", "Error", 
+            if (App.ShowMessage("The login token is incorrect or expired. Try to reconnect now?", "Error",
                 MessageBoxButton.YesNo, MessageBoxImage.None, MessageBoxResult.No) == MessageBoxResult.Yes)
             {
                 StartBrowserAuth();

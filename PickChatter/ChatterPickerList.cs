@@ -5,6 +5,8 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using TwitchLib.Client.Events;
+using TwitchLib.PubSub.Events;
 
 namespace PickChatter
 {
@@ -133,6 +135,65 @@ namespace PickChatter
 
         private ChatterPickerList()
         {
+            TwitchClient.Instance.ChannelPointRedemption += (_, args) => OnChannelPointsRedemption(args);
+            TwitchClient.Instance.GiftedSubscription += (_, args) => OnGiftedSubscription(args);
+            TwitchClient.Instance.MultiGiftedSubscription += (_, args) => OnMultiGiftedSubscription(args);
+            TwitchClient.Instance.BitsReceived += (_, args) => OnBitsReceived(args);
+        }
+
+        private string? GetID(string username)
+        {
+            foreach (var picker in pickers)
+            {
+                if (picker.ChatterName == username)
+                {
+                    return picker.ID;
+                }
+            }
+
+            return null;
+        }
+
+        private void OnBitsReceived(OnMessageReceivedArgs args)
+        {
+            var id = GetID(args.ChatMessage.Username);
+            WebSocketServer.Instance.Send("bits", id ?? "", new
+            {
+                username = args.ChatMessage.Username,
+                amount = args.ChatMessage.Bits,
+                message = args.ChatMessage.Message,
+            });
+        }
+
+        private void OnGiftedSubscription(OnGiftedSubscriptionArgs args)
+        {
+            var id = GetID(args.GiftedSubscription.Login);
+            WebSocketServer.Instance.Send("gift", id ?? "", new
+            {
+                username = args.GiftedSubscription.Login,
+                recipientName = args.GiftedSubscription.MsgParamRecipientUserName,
+            });
+        }
+
+        private void OnMultiGiftedSubscription(OnCommunitySubscriptionArgs args)
+        {
+            var id = GetID(args.GiftedSubscription.Login);
+            WebSocketServer.Instance.Send("multigift", id ?? "", new
+            {
+                username = args.GiftedSubscription.Login,
+                amount = args.GiftedSubscription.MsgParamMassGiftCount,
+            });
+        }
+
+        private void OnChannelPointsRedemption(OnMessageReceivedArgs args)
+        {
+            var id = GetID(args.ChatMessage.Username);
+            WebSocketServer.Instance.Send("redemption", id ?? "", new
+            {
+                rewardId = args.ChatMessage.CustomRewardId,
+                username = args.ChatMessage.Username,
+                message = args.ChatMessage.Message,
+            });
         }
 
         private static readonly ChatterPickerList _instance = new();
