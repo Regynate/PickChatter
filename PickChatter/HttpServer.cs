@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace PickChatter
 {
@@ -56,30 +57,68 @@ namespace PickChatter
                 HttpListenerResponse res = ctx.Response;
 
                 byte[] data = Array.Empty<byte>();
+                var path = req.Url?.AbsolutePath;
 
-                if (req?.Url?.AbsolutePath == "/oauth/redirect")
+                if (path == "/oauth/redirect")
                 {
                     data = File.ReadAllBytes(".\\redirect.html");
                 }
                 else if (req?.QueryString.Get("state") == stateString)
                 {
-                    if (req?.Url?.AbsolutePath == "/error")
+                    if (path == "/error")
                     {
                         data = File.ReadAllBytes(".\\error.html");
                     }
-                    else if (req?.Url?.AbsolutePath == "/oauth")
+                    else if (path == "/oauth")
                     {
                         data = File.ReadAllBytes(".\\success.html");
                         Token = req.QueryString.Get("access_token");
                         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Token)));
                     }
                 }
-                else if (req?.Url?.AbsolutePath == "/11labs")
+                else if (path == "/11labs")
                 {
-                    if (ElevenLabsAPI.GetAudio(req.QueryString.Get("message") ?? "", req.QueryString.Get("voice") ?? "", out data))
+                    if (ElevenLabsAPI.GetAudio(req.QueryString?.Get("message") ?? "", req.QueryString?.Get("voice") ?? "", out data))
                     {
                         res.ContentType = "audio/mp3";
                     }
+                }
+                else if (path?.StartsWith("/overlay") ?? false)
+                {
+                    if (path == "/overlay" || path == "/overlay/")
+                    {
+                        path = path + "/index.html";
+                    }
+                    try
+                    {
+                        data = File.ReadAllBytes("..//" + path);
+                        var contentType = new Dictionary<string, string> {
+                            { ".ico", "image/x-icon" },
+                            {".html", "text/html"},
+                            {".js", "text/javascript"},
+                            {".json", "application/json"},
+                            {".css", "text/css"},
+                            {".png", "image/png"},
+                            {".jpg", "image/jpeg"},
+                            {".gif", "image/gif"},
+                            {".wav", "audio/wav"},
+                            {".mp3", "audio/mpeg"},
+                            {".svg", "image/svg+xml" },
+                            {".pdf", "application/pdf"},
+                            {".doc", "application/msword" }
+                        };
+                        var ext = Path.GetExtension(path);
+
+                        res.ContentType = contentType.GetValueOrDefault(ext, "text/html");
+                    }
+                    catch
+                    {
+                        data = Encoding.UTF8.GetBytes("Not found");
+                    }
+                }
+                else
+                {
+                    data = Encoding.UTF8.GetBytes("Not found");
                 }
 
                 await res.OutputStream.WriteAsync(data);
